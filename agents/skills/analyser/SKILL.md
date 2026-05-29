@@ -15,8 +15,8 @@ human_gate: false
 Read the codebase **before** implementation. Output is the source of truth for downstream agents.
 
 ## Input
-- Run context: `spec_validation`
-- Full artifact markdown
+- Run context: `workspace/runs/<story-key>/context.json`; requires `ready_for_analyser: true`
+- Parent **product spec** at `run.spec_path` and active **story** body (Linear/Jira MCP or manual paste)
 - **Read `references/project-conventions.md` first**, then the repo via allowed commands.
 
 ## Steps (adapt paths)

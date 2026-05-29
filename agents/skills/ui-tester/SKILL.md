@@ -2,7 +2,7 @@
 name: ui-tester
 description: >
   After builder for frontend tickets: browser or component tests against local dev
-  URL. Failures may escalate back to builder per orchestrator policy.
+  URL. Failures may escalate back to builder per team policy in project-conventions.md.
 version: "1.0.0"
 author: WholeLoop
 output: ui-test-report.md + context ui_testing block

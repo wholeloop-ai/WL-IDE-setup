@@ -1,5 +1,0 @@
-# WholeLoop ADWF — Python orchestrator (optional; pin versions in your app)
-anthropic>=0.40.0
-python-dotenv>=1.0.0
-requests>=2.31.0
-watchdog>=4.0.0

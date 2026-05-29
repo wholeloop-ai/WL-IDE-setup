@@ -1,43 +1,53 @@
 ---
 name: handoff
 description: >
-  After PR gate approval: emit one closure markdown for your doc repo, optional
-  issue-tracker comment (e.g. Linear), then allow workspace cleanup. Orchestrator
-  may perform API calls; this skill defines content and JSON shape.
-version: "1.0.0"
+  After PR gate: closure markdown + tracker comment (Linear/Jira MCP) or paste-ready
+  text for manual mode. Cursor, Claude Code, VS Code.
+version: "2.1.0"
 author: WholeLoop
-output: JSON handoff block (orchestrator persists files + posts to tracker)
+output: handoff block in workspace/runs/<story-key>/context.json
 human_gate: false
 ---
 
 # Handoff
 
 ## Role
-Close the loop for PM/discovery: **one** summary document + **short** tracker comment + signal to clean ephemeral workspace files.
+
+Close the loop: **one** summary document + **short tracker comment** + optional workspace cleanup.
 
 ## Input
-Full run context including `pr.pr_url`, gates, review/build summaries, artifact AC table.
+
+`workspace/runs/<story-key>/context.json` — `run.tracker_provider`, `run.story_key`, `pr`, review/build summaries, story AC.
 
 ## Output JSON
+
 ```json
 {
   "handoff": {
     "ok": true,
-    "filename": "YYYY-MM-DD-<ticket-id>-handoff.md",
-    "full_markdown": "... full doc ...",
-    "linear_comment_markdown": "... shorter body for Linear / copy-paste to other trackers ...",
+    "filename": "YYYY-MM-DD-<story-key>-handoff.md",
+    "full_markdown": "...",
+    "tracker_comment_markdown": "... PR link, spec_id, AC status ...",
     "run_cleanup": true
   }
 }
 ```
 
-- **`linear_comment_markdown`**: keep under ~8k chars; include PR link and AC status. (Jira/GitHub: paste same text or adapt.)
-- **`run_cleanup`**: `true` when safe to delete ephemeral agent outputs (your orchestrator runs the cleanup script).
+Legacy field name `linear_comment_markdown` is acceptable when `tracker_provider` is `linear`.
 
-## Environment (typical)
-- `LINEAR_API_KEY` + issue id = `ticket_id` (Linear GraphQL), or adapt orchestrator for Jira/GitHub.
-- `WHOLELOOP_HANDOFF_ROOT` — absolute path to the documentation/product repo where handoff `.md` files live (subpath e.g. `Progress/adwf-handoffs/` is your convention). Walliu uses `WALLIU_PRODUCT_ROOT` + fixed subpath — rename in your fork if you prefer.
+## Actions (by provider)
+
+| Provider | Post comment | Doc file |
+|----------|--------------|----------|
+| **linear** | Linear MCP → `run.story_id` / story URL | Conventions path |
+| **jira** | Jira MCP → issue `run.story_key` | Same |
+| **manual** | Output `tracker_comment_markdown` for human to paste in any tool | Same |
+
+1. Write `full_markdown` to handoff/product path from conventions.
+2. Post or paste `tracker_comment_markdown`.
+3. Delete `workspace/runs/<story-key>/` only after human confirms when `run_cleanup: true`.
 
 ## Never
-- Never invent PR URLs.
+
+- Never invent PR URLs or story keys.
 - Never paste secrets into markdown.

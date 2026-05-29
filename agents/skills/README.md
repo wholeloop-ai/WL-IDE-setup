@@ -1,7 +1,15 @@
 # Skills — how to use this folder
 
 - Each subdirectory is one **agent**; `SKILL.md` is the prompt body.
-- Copy this entire `agents/skills` tree to **`<your-app>/.agents/skills/`** (see `install/copy-skills-to-repo.sh`).
-- Add **`references/project-conventions.md`** in the **target** repo (copy from `wholeloop/references/PROJECT_CONVENTIONS.template.md` and fill in).
+- Copy to **`<your-app>/.agents/skills/`** via `install/copy-skills-to-repo.sh`.
+- Specs: **product** repo (`references/SPEC.template.md`). Stories: **Linear**, **Jira**, or **manual** — see **`docs/TRACKERS.md`**.
 
-Frontmatter `name` must match the folder name your orchestrator passes to `load_skill("<name>")`.
+## Default pipeline
+
+```text
+tracker-intake → spec-validator → analyser → planner → … → handoff
+```
+
+**IDEs:** `.cursor/skills` and `.claude/skills` symlink here; VS Code uses `WHOLELOOP.md` + these paths.
+
+See **`docs/WORKFLOW_PRODUCT_LINEAR.md`** and **`docs/IDE_SETUP.md`**.

@@ -1,97 +1,88 @@
 # WholeLoop — team guidelines
 
-Use this document with **README.md** when onboarding a team to WholeLoop on a new repository or monorepo.
+Use with **README.md** when onboarding a team.
 
 ## 1. Terminology
 
 | Term | Meaning |
 |------|---------|
-| **Artifact** | The inbound spec file (e.g. `ARTIFACT-PROJ-42-feature.md`) dropped in `inbox/`. |
-| **ADWF** | Agentic Delivery Workflow — the ordered pipeline with gates. |
-| **Skill** | A `SKILL.md` file: YAML frontmatter + markdown instructions for one agent role. |
-| **Gate** | A pause for human (or PM UI) approval before the next expensive or irreversible step. |
-| **Workspace** | Ephemeral directory for `context.json`, reports, screenshots — **not** long-lived product docs. |
+| **Spec** | Approved markdown in the **product** repo (e.g. `specs/SPEC-2025-042.md`). |
+| **Story** | User story in Linear, Jira, or a manual list — linked to that spec. |
+| **Cohort** | All stories for one spec — reviewed together in **spec-validator**. |
+| **ADWF** | Agentic Delivery Workflow — ordered pipeline with human gates. |
+| **Skill** | `SKILL.md`: YAML frontmatter + instructions for one agent role. |
+| **Gate** | Human approval before the next step (in IDE chat or tracker). |
+| **Workspace** | Ephemeral `workspace/runs/` — not long-lived product docs. |
 
-## 2. Repository layout (in each app repo)
-
-Recommended (compatible with Walliu reference orchestrator):
+## 2. Repository layout (app repo)
 
 ```text
 <app>/
-├── .agents/
-│   └── skills/
-│       ├── spec-validator/SKILL.md
-│       ├── analyser/SKILL.md
-│       ├── planner/SKILL.md
-│       ├── migration/SKILL.md      # optional — SQL-only repos
-│       ├── ui-ux-designer/SKILL.md # optional — frontend tickets
-│       ├── builder/SKILL.md
-│       ├── ui-tester/SKILL.md      # optional
-│       ├── reviewer/SKILL.md
-│       ├── pr-agent/SKILL.md
-│       ├── handoff/SKILL.md        # optional — closure + tracker + cleanup
-│       └── references/
-│           └── project-conventions.md   # YOUR stack — maintain this
-├── inbox/                    # inbound artifacts (gitignore active queue if you prefer)
-├── workspace/                # ephemeral — strong .gitignore
-├── orchestrator.py           # your runner (or copy from reference impl.)
-└── .env.local                # API keys — never commit
+├── .agents/skills/          # canonical prompts (wholeloop init)
+├── workspace/runs/          # gitignored
+├── WHOLELOOP.md
+├── CLAUDE.md                # Claude Code
+├── .github/copilot-instructions.md
+├── .cursor/skills → .agents/skills
+├── .claude/skills → .agents/skills
+└── .cursor/rules/wholeloop.mdc
 ```
 
-**Cursor / IDE:** Many teams also mirror skills under `.cursor/skills/` for **manual** agent invocation. Pick **one** source of truth to avoid drift:
+**Product repo (separate):** `specs/SPEC-*.md` from `references/SPEC.template.md`.
 
-- **Option A** — Only `.agents/skills/` (orchestrator + symlink from `.cursor` if needed).
-- **Option B** — Only `.cursor/skills/` and set `SKILLS_DIR` in orchestrator to that path.
+Install: `wholeloop init` — [docs/CLI.md](docs/CLI.md).
 
-Document the choice in your app `CONTRIBUTING.md`.
+## 3. Issue tracker
 
-## 3. Environment variables (typical)
+Set in `references/project-conventions.md`:
 
-| Variable | Purpose |
-|----------|---------|
-| `ANTHROPIC_API_KEY` | LLM calls from Python orchestrator (or swap for your provider). |
-| `SKILLS_DIR` | Path to folder containing `*/SKILL.md` (default `.agents/skills`). |
-| `INBOX_DIR`, `WORKSPACE_DIR` | Artifact queue and run scratch space. |
-| `LINEAR_API_KEY` | Optional — handoff posts issue comment (see skill `handoff`). |
-| `WHOLELOOP_HANDOFF_ROOT` | Optional — root repo path where handoff markdown is written (your “product doc” repo). |
-| `LINEAR_SKIP` | `1` to skip Linear API. |
+| `tracker.provider` | How stories arrive |
+|--------------------|--------------------|
+| `linear` | Linear MCP |
+| `jira` | Jira MCP |
+| `manual` | Pasted table / list in IDE chat |
 
-Rename or extend per project (e.g. Jira instead of Linear — fork `handoff` skill).
+Details: **[docs/TRACKERS.md](docs/TRACKERS.md)**.
 
-## 4. Artifact naming
+## 4. Gates (minimum)
 
-Define a **prefix** and **ID scheme** per org (e.g. `ARTIFACT-ACME-123.md`). The orchestrator should watch `ARTIFACT-*.md` or your glob. Document:
+| Gate | After |
+|------|--------|
+| Spec + story | **spec-validator** |
+| Plan | **planner** |
+| Design | **ui-ux-designer** (optional) |
+| PR | **pr-agent** |
 
-- Where specs are authored (Notion, internal repo, PM tool export).
-- Who may drop files into `inbox/`.
+Gates happen in the IDE (approve / reject / approve-with-note). No separate WholeLoop UI or n8n required.
 
-## 5. Gates (minimum viable)
+## 5. Optional configuration
 
-| Gate | Typical trigger |
-|------|-----------------|
-| **spec** | After spec-validator output. |
-| **plan** | After planner + scope validation. |
-| **design** | If `ui-ux-designer` ran. |
-| **pr** | After `pr-agent` opens PR. |
+| Item | Purpose |
+|------|---------|
+| `WHOLELOOP_HANDOFF_ROOT` | Extra repo path for handoff markdown (optional) |
+| Linear / Jira MCP | IDE settings — not committed to app repo |
 
-You can start with **terminal-only** gates (`input()` or a simple HTTP gate) before investing in WholeLoop UI or n8n.
+LLM API keys live in the **IDE**, not in WholeLoop templates.
 
 ## 6. Security
 
-- Never commit API keys or customer data from `workspace/`.
-- `reviewer` skill should include “no secrets in diff” for your stack.
-- Restrict which paths `builder` / `migration` may touch (enforce in planner + CI path filters).
+- Never commit `workspace/` or API keys.
+- `reviewer` — no secrets in diff.
+- Planner + CI — forbidden paths per `project-conventions.md`.
 
-## 7. Multi-repo / monorepo
+## 7. Multi-repo
 
-- **One orchestrator per app repo** is simplest.
-- If one ticket spans two repos, split into **two artifacts** or run orchestrator twice with linked ticket IDs in the handoff doc.
+- One **WholeLoop run** per story per app repo.
+- Cross-repo work: split stories or link `story_key` / spec_id in handoff notes.
 
-## 8. Updating from this template
+## 8. Updating skills
 
-1. Diff `agents/skills/` in this repo vs your app `.agents/skills/`.
-2. Merge generic improvements; keep your `project-conventions.md` and any custom agents.
+```bash
+wholeloop update    # in app repo; keeps project-conventions.md
+```
+
+Or diff `agents/skills/` in this template vs your app copy.
 
 ## 9. Support
 
-Issues and discussions live in **this** `wholeloop` repository. Product-specific bugs belong in each application’s repo.
+Issues in **this** repository. Application bugs stay in each app repo.

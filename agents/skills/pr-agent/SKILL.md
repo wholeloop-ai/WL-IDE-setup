@@ -20,12 +20,12 @@ Git + GitHub/GitLab hygiene: branch, stage only planned paths, commit, push, ope
 ## Steps
 1. `gh auth status` (or your CLI).
 2. Branch naming convention from `project-conventions.md`.
-3. Stage **only** allowed product paths — never workspace reports or `context.json`.
+3. Stage **only** allowed product paths — never `workspace/` reports or `context.json`.
 4. PR body from build + review summaries.
 5. `gh pr create` (or API).
 
 ## Human gate
-Wait for PR gate approval in your orchestrator (separate from GitHub review).
+Wait for human PR gate approval (separate from GitHub review).
 
 ## Never
 - Never force-push to shared default branch.

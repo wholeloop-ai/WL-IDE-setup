@@ -1,66 +1,51 @@
 # WholeLoop architecture
 
-## Pipeline (default)
+## Pipeline
+
+See **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)** and **[TRACKERS.md](TRACKERS.md)**.
 
 ```text
-                    ┌─────────────────┐
-   inbox/ARTIFACT-*  │  spec-validator │──► gate: spec
-          ─────────►│  (+ human gate) │
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │    analyser     │  reads repo + artifact
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │     planner     │──► gate: plan
-                    │ scope_validation│
-                    └────────┬────────┘
-                             ▼
-              ┌──────────────┴──────────────┐
-              ▼                             ▼
-     ┌────────────────┐            ┌──────────────┐
-     │ ui-ux-designer │──► gate    │  migration   │  (optional, SQL-only)
-     │    (optional)  │   design   └──────┬───────┘
-     └────────┬───────┘                   │
-              ▼                           ▼
-     ┌────────────────┐            ┌──────────────┐
-     │    builder     │            │   builder    │  (if not migration-only)
-     └────────┬───────┘            └──────┬───────┘
-              └────────────┬─────────────┘
-                           ▼
-                    ┌─────────────────┐
-                    │   ui-tester     │  (optional)
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │    reviewer     │
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │    pr-agent     │──► gate: pr
-                    └────────┬────────┘
-                             ▼
-                    ┌─────────────────┐
-                    │    handoff      │  optional: doc + tracker + cleanup
-                    └─────────────────┘
+Product spec (approved) ──► Story cohort (Linear / Jira MCP or manual)
+        │
+        ▼
+tracker-intake (optional) ──► spec-validator ──► gate (human)
+   Phase A: spec implementability
+   Phase B: story + cohort coherence (+ suggested edits)
+        │
+        ▼
+analyser → planner → gate (human) → … → pr-agent → gate → handoff
 ```
+
+Optional agents: `ui-ux-designer`, `migration`, `ui-tester`.
+
+Context per story: `workspace/runs/<story-key>/context.json`.
 
 ## Context object
 
-Runs accumulate structured JSON (Walliu uses `workspace/context.json` keys: `spec_validation`, `codebase_analysis`, `execution_plan`, `build`, `review`, `pr`, `handoff`, …). Your orchestrator should:
+Each agent appends JSON blocks (`spec_validation`, `codebase_analysis`, `execution_plan`, `build`, `review`, `pr`, `handoff`, …). The next agent reads the full file plus `project-conventions.md`.
 
-1. Merge each agent’s JSON output into the context blob.
-2. Pass the full context to the next agent (plus `project-conventions.md`).
+Humans (or the IDE agent) advance the pipeline — there is **no** background runner in this template.
 
-## Events (optional)
+## Gates
 
-Emit JSON lines or HTTP webhooks per step (`agent:started`, `gate:waiting`, `run:complete`) for observability or a PM dashboard.
+| Gate | After |
+|------|--------|
+| Spec / story | **spec-validator** |
+| Plan | **planner** |
+| Design | **ui-ux-designer** (if used) |
+| PR | **pr-agent** |
+
+Declared in skill frontmatter (`human_gate: true`) and in **WHOLELOOP.md**.
 
 ## Extending agents
 
-- Add a folder `agents/skills/my-agent/SKILL.md`.
-- Teach `planner` when to route to `my-agent`.
-- Implement `call_agent("my-agent", ctx)` in your orchestrator.
+1. Add `agents/skills/my-agent/SKILL.md`.
+2. Update **planner** routes for when to invoke it.
+3. Run `wholeloop update` in app repos after publishing template changes.
 
-Keep **planner** as the single place that defines allowed agent order for a ticket type.
+Keep **planner** as the single place that defines agent order per ticket type.
+
+## Out of scope (this repo)
+
+- Python orchestrator, inbox watchers, n8n flows — not part of the supported developer experience.
+- Automation is via **IDE + skills + MCP** (or manual story paste).

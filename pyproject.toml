@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "wholeloop-cli"
+version = "0.1.0"
+description = "Install WholeLoop agent skills into app repos (Cursor, Claude Code, VS Code)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [{ name = "WholeLoop" }]
+keywords = ["wholeloop", "cursor", "agents", "linear", "jira", "adwf"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+]
+dependencies = []
+
+[project.scripts]
+wholeloop = "wholeloop.cli:main"
+
+[project.urls]
+Documentation = "https://github.com/wholeloop-ai/WL-IDE-setup/blob/main/docs/CLI.md"
+Repository = "https://github.com/wholeloop-ai/WL-IDE-setup"
+Homepage = "https://github.com/wholeloop-ai/WL-IDE-setup"
+
+[tool.hatch.build.targets.wheel]
+packages = ["wholeloop"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"agents" = "wholeloop/_bundle/agents"
+"references" = "wholeloop/_bundle/references"
+
+[tool.hatch.build.targets.sdist]
+include = ["wholeloop/", "agents/", "references/", "docs/CLI.md"]

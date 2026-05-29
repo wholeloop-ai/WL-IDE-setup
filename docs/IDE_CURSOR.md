@@ -1,33 +1,27 @@
 # WholeLoop + Cursor IDE
 
-## Option 1 — Cursor Agent Skills (recommended)
+Same skills as **Claude Code** and **VS Code**. Start with **[IDE_SETUP.md](IDE_SETUP.md)**.
 
-1. Copy `agents/skills/*` into your app at **`.cursor/skills/<name>/SKILL.md`** *or* keep under `.agents/skills/` and add a **rule** that tells the AI to read those paths.
-
-2. In **Cursor Settings → Rules**, add something like:
-
-   > When working on a ticket from `inbox/ARTIFACT-*.md`, follow the WholeLoop sequence: spec-validator → analyser → planner → … Use `.agents/skills/<agent>/SKILL.md` as the system prompt for that step.
-
-3. Optional: add a **`.cursor/rules/wholeloop.mdc`** (project rule) with the same workflow and links to `project-conventions.md`.
-
-## Option 2 — Symlink (single source of truth)
-
-If the canonical skills live in a git submodule or monorepo path:
+## Install (one command)
 
 ```bash
-ln -s ../wholeloop/agents/skills .agents/skills
+bash wholeloop/install/copy-skills-to-repo.sh /path/to/your-app
 ```
 
-Point `SKILLS_DIR` in your orchestrator to `.agents/skills`.
+Creates:
 
-## Option 3 — MCP + manual
+- `.agents/skills/` — canonical
+- `.cursor/skills` → symlink to `.agents/skills`
+- `.cursor/rules/wholeloop.mdc` — points to `WHOLELOOP.md`
+- `WHOLELOOP.md`, `workspace/runs/`
 
-Use **Linear**, **GitHub**, or other MCP servers from Cursor for issue/PR actions; keep WholeLoop skills for **implementation discipline** only.
+## Usage
 
-## Skill frontmatter
+- “Follow **WHOLELOOP.md**, run **tracker-intake** for SPEC-2025-042” (Linear/Jira MCP or manual paste)
+- Enable **Linear** or **Jira MCP** per [TRACKERS.md](TRACKERS.md)
 
-Cursor discovers skills via YAML frontmatter (`name`, `description`). Keep descriptions **short** and **trigger-oriented** so the right skill is suggested.
+## Rules + skills
 
-## Conflicts
+Do not edit `.cursor/skills/` directly — change `.agents/skills/` only (shared with other IDEs).
 
-If both `.cursor/skills` and `.agents/skills` exist, **delete or symlink one** — document which is canonical in your repo README.
+Full workflow: **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)**.

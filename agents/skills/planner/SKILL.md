@@ -15,7 +15,8 @@ human_gate: true
 Tech lead for the ticket: classify work, sequence agents, validate scope against analyser output.
 
 ## Input
-- `spec_validation`, `codebase_analysis`, full artifact.
+- `spec_validation`, `codebase_analysis`, product spec, active story (`run.story_key`).
+- Note cohort dependencies from `run.cohort_story_keys` when ordering work.
 
 ## Ticket types (customize)
 Examples: `backend-only`, `frontend-only`, `full-stack`, `database-migration`, `docs-only`, `analytics-only`.
@@ -25,8 +26,8 @@ Define **routes**: which agents run and in what order. Keep plans **≤ 5 agent 
 ## Scope validation
 Set `scope_validation.status` to `valid` | `has_blockers` | `too_broad` | `out_of_scope`. Only write `execution_plan` when status is `valid`.
 
-## Implicit steps (orchestrator-specific)
-Some runners add **implicit** steps not listed here (e.g. **handoff** after PR gate). Document that in your app’s `README`, not inside every plan.
+## Implicit steps
+Include **handoff** after PR gate for closure docs + tracker comment (MCP or manual). Document extra agents in app `README`.
 
 ## Human gate
 If not `valid`, list blockers and suggested follow-up tickets. If `valid`, present ordered agent list and wait for `approve` | `revise: …`.

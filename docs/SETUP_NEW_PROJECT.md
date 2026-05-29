@@ -1,33 +1,44 @@
 # Setting up WholeLoop on a new project
 
-## Checklist
+**Product spec + stories (Linear / Jira / manual) + IDE skills** — no orchestrator or n8n. See **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)** and **[TRACKERS.md](TRACKERS.md)**.
 
-1. [ ] Choose **artifact naming** (`ARTIFACT-<ORG>-<id>.md` or similar).
-2. [ ] Copy **`agents/skills/`** from this repo into `<app>/.agents/skills/`.
-3. [ ] Create **`references/project-conventions.md`** from `references/PROJECT_CONVENTIONS.template.md` — list stack, forbidden paths, test commands, env vars.
-4. [ ] Add **`inbox/`** and **`workspace/`**; add `workspace/` to **`.gitignore`** (patterns in GUIDELINES).
-5. [ ] Wire **orchestrator** (copy from reference implementation or build minimal runner that loads `SKILL.md` + calls your LLM API).
-6. [ ] Add **`.env.local`** with model API key; never commit it.
-7. [ ] Document in your app **README** how PM drops artifacts and how devs run the pipeline.
-8. [ ] (Optional) **CI** — block merges that touch forbidden paths on `ui-only` labels, etc.
+## Checklist (app repo)
 
-## Cursor-only mode (no Python)
+1. [ ] Install WholeLoop: `wholeloop init` in your app repo ([CLI.md](CLI.md)) — or legacy bash script
+2. [ ] Fill **`references/project-conventions.md`** — stack, **issue tracker** (`linear` \| `jira` \| `manual`), product repo path.
+3. [ ] Add **`workspace/runs/`** (install script creates it) and **`workspace/`** to **`.gitignore`**.
+4. [ ] **IDEs** — install script configures Cursor, Claude Code, and VS Code together ([IDE_SETUP.md](IDE_SETUP.md))
+5. [ ] Configure tracker: Linear/Jira MCP and/or **manual** paste — [TRACKERS.md](TRACKERS.md).
+6. [ ] Document in app **README**: product spec → stories → WholeLoop per `story_key`.
+7. [ ] (Optional) **CI** — path filters, forbidden dirs.
 
-Some teams run WholeLoop **manually**:
+## Checklist (product repo)
 
-1. PM drops artifact in repo (or pastes into Cursor).
-2. Human invokes skills in order (Composer / Agent with skill name).
-3. Human updates `workspace/context.json` by hand or lets each agent append JSON.
+1. [ ] Copy `references/SPEC.template.md` → `specs/SPEC-YYYY-NNN.md`
+2. [ ] On approval: create stories in Linear, Jira, or list for manual intake
+3. [ ] Link spec in epic description (URL to markdown file)
 
-This repo’s **skills** are still the source of truth for prompts; you lose automation, gates, and event logs unless you add scripts later.
+## IDE workflow (summary)
 
-## Install script (optional)
+1. **tracker-intake** — cohort via MCP or manual paste.
+2. **spec-validator** — Phase A + Phase B → `approve`.
+3. **analyser** → **planner** → … → **handoff**.
 
-From anywhere (use absolute path to this repo):
+Context: `workspace/runs/<story-key>/context.json`.
+
+## Install (CLI — recommended)
 
 ```bash
-bash /path/to/wholeloop/install/copy-skills-to-repo.sh /absolute/path/to/your-app
-bash /path/to/wholeloop/install/copy-skills-to-repo.sh /absolute/path/to/your-app --force
+pipx install wholeloop-cli   # https://pypi.org/project/wholeloop-cli/
+cd /path/to/your-app
+wholeloop init
+wholeloop doctor
 ```
 
-Copies `agents/skills` → `<your-app>/.agents/skills` (`--force` overwrites). If the script is not executable after clone: `chmod +x wholeloop/install/copy-skills-to-repo.sh`.
+See **[CLI.md](CLI.md)** for `update`, `--force`, Windows `--copy-ide-skills`.
+
+Legacy: `bash wholeloop/install/copy-skills-to-repo.sh /path/to/app` (uses CLI if installed).
+
+## Architecture
+
+[ARCHITECTURE.md](ARCHITECTURE.md) — pipeline, context, gates (IDE-only).

@@ -1,0 +1,19 @@
+---
+description: WholeLoop ADWF — same workflow in Cursor, Claude Code, and VS Code
+globs:
+alwaysApply: true
+---
+
+# WholeLoop
+
+Read **`WHOLELOOP.md`** at the repo root first. Skills are canonical under **`.agents/skills/`** (this project also symlinks **`.cursor/skills/`** to the same tree).
+
+When the user works on a product **spec** and user **stories**:
+
+1. Read `project-conventions.md` — **Issue tracker** (`linear` | `jira` | `manual`).
+2. **tracker-intake** (optional) → **spec-validator** → human gate → **analyser** → **planner** → … → **handoff**.
+3. Context: `workspace/runs/<story-key>/context.json`.
+4. Use Linear/Jira MCP when configured; **manual** = pasted cohort and story text. Never invent issue URLs.
+5. spec-validator may **suggest** spec/issue edits; human applies before `approve`.
+
+Other IDEs on this repo use the same files (`CLAUDE.md`, `.github/copilot-instructions.md`).

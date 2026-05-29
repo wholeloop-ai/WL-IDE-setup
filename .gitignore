@@ -1,5 +1,9 @@
 .DS_Store
 *.pyc
+.venv/
+_cli_test_app/
+dist/
+*.egg-info/
 __pycache__/
 .env
 .env.*

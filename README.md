@@ -1,50 +1,36 @@
 # WholeLoop
 
-**WholeLoop** is an **agentic delivery workflow** (ADWF): structured specs → gated LLM agents → implementation → review → PR → optional handoff to your issue tracker and documentation repo.
+**WholeLoop** is an **agentic delivery workflow** (ADWF): product specs → user stories (Linear, Jira, or manual) → gated agents in the IDE → implementation → review → PR → handoff.
 
-This repository is the **portable template**: folder layout, generic `SKILL.md` prompts, conventions, and team guidelines. It contains **no product code** — you copy or symlink pieces into each application repository.
+Portable **skills + CLI + docs**. No background orchestrator, no n8n — developers run the pipeline in **Cursor**, **Claude Code**, or **VS Code**.
 
 ## What you get
 
 | Area | In this repo |
 |------|----------------|
-| **Skills** | `agents/skills/*/SKILL.md` — copy to `<your-app>/.agents/skills/` (or set `SKILLS_DIR`) |
-| **Conventions template** | `references/PROJECT_CONVENTIONS.template.md` — replace with your stack |
-| **Orchestrator** | Not vendored here (see **Reference implementation** below). Use your fork or the Walliu `orchestrator.py` as a starting point. |
-| **Guidelines** | `GUIDELINES.md`, `docs/` — how teams wire IDE, env, gates |
+| **Skills** | `agents/skills/*/SKILL.md` |
+| **CLI** | `pipx install wholeloop-cli` → `wholeloop init` — [docs/CLI.md](docs/CLI.md) · [Publish](docs/PUBLISHING_CLI.md) |
+| **Trackers** | [docs/TRACKERS.md](docs/TRACKERS.md) — Linear, Jira, manual |
+| **Spec template** | `references/SPEC.template.md` (product repo) |
+| **Conventions** | `references/PROJECT_CONVENTIONS.template.md` |
+| **Workflow** | [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md) |
 
 ## Principles
 
-1. **One artifact in** — Markdown (or YAML) spec dropped in `inbox/` defines the ticket.
-2. **Gates** — Human or WholeLoop UI approves spec, plan, design, PR before continuing.
-3. **Skills are prompts** — Each agent is a `SKILL.md` loaded by your runner (Python orchestrator, Cursor, n8n, etc.).
-4. **Project conventions** — Single source of truth your agents read first (paths, stack, “never do X”).
-5. **Ephemeral workspace** — Agent outputs under `workspace/`; handoff step consolidates and cleans when you wire it.
+1. **Spec in product repo** — Stories in your issue tracker (or manual list).
+2. **One run per story** — `workspace/runs/<story-key>/context.json`.
+3. **Human gates** — After spec-validator and planner (and PR when applicable).
+4. **IDE-native** — Skills + MCP or pasted stories; no WholeLoop server to deploy.
 
-## Quick start (new project)
+## Quick start
 
-1. Read **[GUIDELINES.md](GUIDELINES.md)** and **[docs/SETUP_NEW_PROJECT.md](docs/SETUP_NEW_PROJECT.md)**.
-2. Copy `agents/skills/` → `<app>/.agents/skills/`.
-3. Copy `references/PROJECT_CONVENTIONS.template.md` → `<app>/.agents/skills/references/project-conventions.md` and fill in **your** stack.
-4. Add an orchestrator (see **[docs/REFERENCE_IMPLEMENTATION.md](docs/REFERENCE_IMPLEMENTATION.md)**) or integrate skills with **Cursor** only (see **[docs/IDE_CURSOR.md](docs/IDE_CURSOR.md)**) / other editors (**[docs/IDE_VSCODE.md](docs/IDE_VSCODE.md)**).
-5. Create `inbox/`, `workspace/`, `.env.local` with `ANTHROPIC_API_KEY` (or your LLM provider adapter).
+1. [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md)
+2. `pipx install wholeloop-cli` from [PyPI](https://pypi.org/project/wholeloop-cli/) (or `pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git`)
+3. In your app: `wholeloop init` → `wholeloop doctor`
+4. Edit `.agents/skills/references/project-conventions.md`
+5. Product repo: `references/SPEC.template.md` → `specs/`
 
-## Reference implementation
-
-Walliu open-sources a full Python orchestrator, Linear handoff, migration agent, etc. Use it as a **reference fork**, not a submodule requirement:
-
-- App repo: `walliu` — `orchestrator.py`, `orchestrator_server.py`, `inbox/`, `workspace/`, `.agents/skills/` (may be ahead of this template).
-
-When Walliu evolves agents, port changes back into **this** `wholeloop` repo so other projects stay aligned.
-
-## Requirements (orchestrator path)
-
-```txt
-anthropic>=0.40
-python-dotenv
-requests
-watchdog
-```
+[docs/SETUP_NEW_PROJECT.md](docs/SETUP_NEW_PROJECT.md) · [docs/IDE_SETUP.md](docs/IDE_SETUP.md) · [GUIDELINES.md](GUIDELINES.md)
 
 ## License
 
