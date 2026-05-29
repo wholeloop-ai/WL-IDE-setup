@@ -9,6 +9,7 @@ from pathlib import Path
 from wholeloop import __version__
 from wholeloop.doctor import run_doctor
 from wholeloop.install import install_app, update_skills
+from wholeloop.conventions import bootstrap_conventions
 
 
 def _print_lines(lines: list[str]) -> None:
@@ -36,7 +37,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     print("WholeLoop installed (Cursor, Claude Code, VS Code).")
     print(f"  App:         {app}")
     print("  Next steps:")
-    print("    1. Edit .agents/skills/references/project-conventions.md")
+    print("    1. Run project-conventions agent in IDE (confirm CLI bootstrap)")
     print("    2. Read WHOLELOOP.md in this repo")
     print("    3. wholeloop doctor")
     return 0
@@ -65,6 +66,20 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     ok, lines = run_doctor(app)
     print("\n".join(lines))
     return 0 if ok else 1
+
+
+def cmd_conventions_bootstrap(args: argparse.Namespace) -> int:
+    app = Path(args.path or ".").resolve()
+    try:
+        _, line = bootstrap_conventions(app, force=args.force)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    print(line)
+    print()
+    print("CLI filled name, README excerpt, layout, and detected stack (no AI).")
+    print("Next: run the **project-conventions** agent in your IDE and approve.")
+    return 0
 
 
 def cmd_version(_: argparse.Namespace) -> int:
@@ -126,6 +141,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_doc = sub.add_parser("doctor", help="Check WholeLoop installation")
     p_doc.add_argument("path", nargs="?", default=".", help="Path to app repository")
     p_doc.set_defaults(func=cmd_doctor)
+
+    p_conv = sub.add_parser(
+        "conventions",
+        help="Project conventions helpers (CLI bootstrap, no AI)",
+    )
+    conv_sub = p_conv.add_subparsers(dest="conventions_cmd", required=True)
+    p_cb = conv_sub.add_parser(
+        "bootstrap",
+        help="Re-extract basics from README/package files into project-conventions.md",
+    )
+    p_cb.add_argument("path", nargs="?", default=".", help="Path to app repository")
+    p_cb.add_argument(
+        "--force",
+        "-f",
+        action="store_true",
+        help="Overwrite conventions file with fresh CLI bootstrap",
+    )
+    p_cb.set_defaults(func=cmd_conventions_bootstrap)
 
     sub.add_parser("version", help="Print version").set_defaults(func=cmd_version)
 

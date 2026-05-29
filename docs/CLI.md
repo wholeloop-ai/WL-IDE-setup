@@ -98,10 +98,21 @@ wholeloop init --force
 ## Other commands
 
 ```bash
-wholeloop doctor          # verify layout, conventions, symlinks
-wholeloop update          # refresh skills; keeps project-conventions.md
+wholeloop doctor                      # verify layout, conventions, symlinks
+wholeloop conventions bootstrap       # re-extract conventions from README/stack (no AI)
+wholeloop update                      # refresh skills; keeps project-conventions.md
 wholeloop version
 ```
+
+### Project conventions (no AI)
+
+`wholeloop init` writes `.agents/skills/references/project-conventions.md` with:
+
+- Repository name (folder or git remote)
+- README excerpt, top-level directories
+- Detected stack from `package.json`, `pyproject.toml`, `go.mod`, etc.
+
+Then run the **project-conventions** agent in your IDE to confirm and complete. See [PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md).
 
 ## What `init` creates
 
@@ -118,7 +129,7 @@ wholeloop version
 
 ## After install
 
-1. Edit `.agents/skills/references/project-conventions.md` — **issue tracker** (`linear` \| `jira` \| `manual`).
+1. Run **project-conventions** agent — confirm CLI bootstrap ([PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md)).
 2. Product repo: copy `SPEC.template.md` from WholeLoop docs or your vendor package.
 3. Enable Linear/Jira MCP in your IDE, or use **manual** story paste — [TRACKERS.md](TRACKERS.md).
 
@@ -132,4 +143,4 @@ wholeloop version
 pipx run wholeloop-cli init ./apps/web --force
 ```
 
-Pin version when published: `pipx install wholeloop-cli==0.1.0`.
+Pin version: `pipx install wholeloop-cli==0.1.1` (or `uv tool install wholeloop-cli==0.1.1`).

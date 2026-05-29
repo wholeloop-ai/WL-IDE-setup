@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 
 from wholeloop.assets import references_dir, skills_src
+from wholeloop.conventions import bootstrap_conventions
 
 WORKSPACE_GITIGNORE_BLOCK = "\n# WholeLoop ephemeral runs\nworkspace/\n"
 
@@ -100,13 +101,13 @@ def install_app(
 
     ref_out = dest / "references"
     ref_out.mkdir(parents=True, exist_ok=True)
-    conventions = ref_out / "project-conventions.md"
-    template = references_dir() / "PROJECT_CONVENTIONS.template.md"
-    if not conventions.exists() or force:
-        shutil.copy2(template, conventions)
-        lines.append("write .agents/skills/references/project-conventions.md")
-    else:
-        lines.append("keep  project-conventions.md")
+    try:
+        _, conv_line = bootstrap_conventions(app, force=force or not (ref_out / "project-conventions.md").exists())
+        lines.append(conv_line)
+    except FileNotFoundError:
+        template = references_dir() / "PROJECT_CONVENTIONS.template.md"
+        shutil.copy2(template, ref_out / "project-conventions.md")
+        lines.append("write .agents/skills/references/project-conventions.md (template)")
 
     runs = app / "workspace" / "runs"
     runs.mkdir(parents=True, exist_ok=True)
@@ -145,6 +146,8 @@ def install_app(
                 app, parent, force=force, copy_fallback=copy_ide_skills
             )
         )
+
+    lines.append("hint  Run project-conventions agent in IDE to confirm and complete conventions")
 
     return lines
 

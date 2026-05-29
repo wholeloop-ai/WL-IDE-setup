@@ -7,6 +7,7 @@
 ## Default pipeline
 
 ```text
+project-conventions (once per repo, human approve)
 tracker-intake → spec-validator → analyser → planner → … → handoff
 ```
 

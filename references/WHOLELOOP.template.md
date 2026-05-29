@@ -5,7 +5,7 @@
 
 ## Before you start
 
-1. Edit `.agents/skills/references/project-conventions.md` — stack, forbidden paths, **Issue tracker** (`linear` | `jira` | `manual`), product repo path.
+1. **project-conventions** — CLI bootstrap on `init`; run the **project-conventions** agent in IDE to confirm (see `docs/PROJECT_CONVENTIONS.md`).
 2. Enable **Linear** or **Jira MCP** in your IDE when not using `manual` mode (see `docs/TRACKERS.md`).
 3. Specs live in the **product** repo (`specs/SPEC-*.md`), not in this app repo.
 

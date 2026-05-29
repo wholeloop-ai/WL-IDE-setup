@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from wholeloop.conventions import is_bootstrap_pending
+
 
 def run_doctor(app: Path) -> tuple[bool, list[str]]:
     app = app.resolve()
@@ -43,13 +45,15 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
     conventions = skills / "references" / "project-conventions.md"
     if conventions.exists():
         text = conventions.read_text(encoding="utf-8")
+        if is_bootstrap_pending(conventions):
+            lines.append(
+                "  ⚠ project-conventions.md — CLI bootstrap only; "
+                "run **project-conventions** agent in IDE and approve"
+            )
+        else:
+            lines.append("  ✓ project-conventions.md confirmed")
         check(
-            "{{PROJECT_NAME}}" not in text,
-            "project-conventions.md edited",
-            "project-conventions.md still has template placeholders — fill tracker + stack",
-        )
-        check(
-            "tracker.provider" in text.lower() or "provider" in text,
+            "tracker.provider" in text.lower() or "**provider**" in text,
             "conventions mention issue tracker",
             "add Issue tracker section (linear | jira | manual)",
         )
