@@ -1,102 +1,8 @@
-# WholeLoop CLI
+# WholeLoop CLI — reference
 
-Install WholeLoop into an **app repository** without cloning this template repo or running bash scripts.
+Install the CLI: **[install/README.md](../install/README.md)** (uv, pipx, pip, Git).
 
 Works on **macOS, Linux, and Windows** (use `--copy-ide-skills` if symlinks fail).
-
-## Install the CLI (once per machine)
-
-### macOS (Homebrew Python) — `externally-managed-environment`
-
-Homebrew blocks `pip install` on system Python. Use **pipx** (best for CLI tools):
-
-```bash
-brew install pipx
-pipx ensurepath
-# close and reopen the terminal
-pipx install wholeloop-cli==0.1.2
-wholeloop version
-```
-
-### pipx (recommended)
-
-```bash
-pipx install wholeloop-cli==0.1.2
-```
-
-From Git (private or before PyPI):
-
-```bash
-pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.1.2
-```
-
-**Publish to PyPI:** maintainers see [PUBLISHING_CLI.md](PUBLISHING_CLI.md).
-
-### uv (recommended on macOS)
-
-```bash
-uv tool install wholeloop-cli==0.1.2
-wholeloop version
-```
-
-From Git (before PyPI or private fork):
-
-```bash
-uv tool install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.1.2
-```
-
-Editable (WholeLoop contributors):
-
-```bash
-uv tool install /path/to/WL-IDE-setup --force
-```
-
-#### `No solution found` / version missing on PyPI
-
-If `uv` says there is no `wholeloop-cli==0.1.2` but [pypi.org/project/wholeloop-cli](https://pypi.org/project/wholeloop-cli/) lists it, you almost certainly have **multiple package indexes** (e.g. a company mirror plus PyPI). `uv` only uses versions from the **first** index that lists the package (dependency-confusion protection).
-
-Use one of:
-
-```bash
-# Prefer the newest version across all configured indexes
-uv tool install wholeloop-cli==0.1.2 --force --index-strategy unsafe-best-match
-
-# Or install only from PyPI for this command
-uv tool install wholeloop-cli==0.1.2 --force --default-index https://pypi.org/simple --index https://pypi.org/simple
-```
-
-Check configured indexes:
-
-```bash
-uv config list 2>/dev/null || true
-env | grep -i '^UV_'
-```
-
-If your org mirror should serve WholeLoop releases, publish `0.1.2` there or ask infra to sync from PyPI.
-
-### pip without pipx (not recommended on Homebrew Python)
-
-```bash
-python3 -m pip install --user --break-system-packages wholeloop-cli==0.1.2
-export PATH="$(python3 -m site --user-base)/bin:$PATH"
-```
-
-Or use a dedicated venv and call `wholeloop` via the venv’s `bin/` path.
-
-### pip (virtualenv, contributors)
-
-```bash
-python3 -m venv ~/.venvs/wholeloop
-source ~/.venvs/wholeloop/bin/activate
-pip install wholeloop-cli==0.1.2
-```
-
-### Editable (WholeLoop contributors)
-
-```bash
-cd WL-IDE-setup
-pip install -e .
-```
 
 ## Use in your app repo
 
@@ -105,51 +11,49 @@ cd /path/to/your-app
 wholeloop init
 ```
 
-Options:
-
 | Flag | Effect |
 |------|--------|
 | `--force` / `-f` | Overwrite existing install |
-| `--copy-ide-skills` | Copy skills into `.cursor`/`.claude` instead of symlinks |
-| `--conventions-from FILE` | Use team `project-conventions.md` instead of CLI README bootstrap |
+| `--copy-ide-skills` | Copy into `.cursor`/`.claude` instead of symlinks |
+| `--conventions-from FILE` | Team `project-conventions.md` instead of CLI README bootstrap |
 | `path` | Target directory (default: current directory) |
 
 ### Examples
 
 ```bash
-# Install in current repo
 wholeloop init
-
-# Install into another checkout
 wholeloop init ~/projects/acme-api
-
-# Windows without symlink support
-wholeloop init --copy-ide-skills
-
-# Re-install / refresh templates
+wholeloop init --copy-ide-skills          # Windows without symlinks
+wholeloop init --conventions-from ./team-project-conventions.md
 wholeloop init --force
 ```
 
-## Other commands
+## Commands
 
 ```bash
-wholeloop doctor                      # verify layout, conventions, symlinks
-wholeloop conventions bootstrap       # re-extract from README/stack, or prompt for team file
+wholeloop doctor
+wholeloop conventions bootstrap
 wholeloop conventions bootstrap --from FILE
-wholeloop conventions import FILE   # team file from a senior dev (validates template)
-wholeloop update                      # refresh skills; keeps project-conventions.md
+wholeloop conventions import FILE
+wholeloop update
 wholeloop version
 ```
 
 ### Project conventions (no AI)
 
-`wholeloop init` writes `.agents/skills/references/project-conventions.md` with:
+`wholeloop init` writes `.agents/skills/references/project-conventions.md` (README excerpt, layout, detected stack).
 
-- Repository name (folder or git remote)
-- README excerpt, top-level directories
-- Detected stack from `package.json`, `pyproject.toml`, `go.mod`, etc.
+Then run the **project-conventions** agent in your IDE. Details: [PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md).
 
-Then run the **project-conventions** agent in your IDE to confirm and complete. See [PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md).
+**Team file from a senior dev:**
+
+```bash
+wholeloop init --conventions-from ~/Downloads/project-conventions.md
+# or after init:
+wholeloop conventions import ./project-conventions.md
+```
+
+Interactive import on bootstrap (TTY): `wholeloop conventions bootstrap` asks if you have a team file.
 
 ## What `init` creates
 
@@ -166,18 +70,14 @@ Then run the **project-conventions** agent in your IDE to confirm and complete. 
 
 ## After install
 
-1. Run **project-conventions** agent — confirm CLI bootstrap ([PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md)).
-2. Product repo: copy `SPEC.template.md` from WholeLoop docs or your vendor package.
-3. Enable Linear/Jira MCP in your IDE, or use **manual** story paste — [TRACKERS.md](TRACKERS.md).
-
-## Legacy bash script
-
-`install/copy-skills-to-repo.sh` still works. If `wholeloop` is on `PATH`, the script delegates to `wholeloop init`.
+1. **project-conventions** agent — confirm or complete conventions.
+2. Product repo: `references/SPEC.template.md` → `specs/`.
+3. Linear/Jira MCP or manual stories — [TRACKERS.md](TRACKERS.md).
 
 ## CI / monorepo
 
 ```bash
-pipx run wholeloop-cli init ./apps/web --force
+uvx --from wholeloop-cli==0.1.4 wholeloop init ./apps/web --force
 ```
 
-Pin version: `uv tool install wholeloop-cli==0.1.2`.
+See [install/README.md](../install/README.md) for pinned installs.

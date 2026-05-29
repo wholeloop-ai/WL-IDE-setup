@@ -1,14 +1,17 @@
 # IDE setup — Cursor, Claude Code, VS Code
 
-WholeLoop uses **one canonical skills tree** (`.agents/skills/`) and wires each IDE to it. Run once per app repo:
+WholeLoop uses **one canonical skills tree** (`.agents/skills/`) and wires each IDE to it.
+
+## Install
 
 ```bash
-pipx install wholeloop-cli    # or from git — see CLI.md
+uv tool install wholeloop-cli==0.1.4    # see install/README.md for pipx, pip, Git
 cd /path/to/your-app
 wholeloop init
+wholeloop doctor
 ```
 
-## What the install script configures
+## What `wholeloop init` configures
 
 | Artifact | Cursor | Claude Code | VS Code |
 |----------|--------|---------------|---------|
@@ -23,9 +26,10 @@ wholeloop init
 
 ## After install
 
-1. Fill `.agents/skills/references/project-conventions.md`.
-2. Configure **issue tracker**: Linear MCP, Jira MCP, or `manual` — [TRACKERS.md](TRACKERS.md).
-3. Product repo: add specs from `references/SPEC.template.md`.
+1. `wholeloop conventions bootstrap` or team import — [PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md).
+2. Run **project-conventions** agent → approve conventions file.
+3. **Issue tracker:** Linear MCP, Jira MCP, or `manual` — [TRACKERS.md](TRACKERS.md).
+4. Product repo: `references/SPEC.template.md` → `specs/`.
 
 ## Per-IDE notes
 
@@ -43,13 +47,19 @@ Context: `workspace/runs/<story-key>/context.json`.
 
 ## Symlinks and Windows
 
-Install uses relative symlinks (`../.agents/skills`). On Windows, enable Developer Mode or run Git Bash as admin, or copy skills instead of symlinking (document in README — duplicate `.agents/skills` only, do not fork edits).
+`wholeloop init` uses relative symlinks. On Windows, enable Developer Mode or use:
+
+```bash
+wholeloop init --copy-ide-skills
+```
+
+Edit **`.agents/skills/`** only — never fork copies under `.cursor/` or `.claude/`.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
 | Cursor does not suggest skills | Check `.cursor/skills` symlink; reload window |
-| Claude `/spec-validator` missing | Restart Claude Code after install; verify `.claude/skills` |
-| VS Code ignores pipeline | Reference `WHOLELOOP.md` + full path to `SKILL.md` in first message |
-| Drift between folders | Never edit `.cursor/skills` directly — edit `.agents/skills` only |
+| Claude `/spec-validator` missing | Restart Claude Code; verify `.claude/skills` |
+| VS Code ignores pipeline | Reference `WHOLELOOP.md` + skill path in first message |
+| Drift between folders | Edit `.agents/skills` only; run `wholeloop update` |

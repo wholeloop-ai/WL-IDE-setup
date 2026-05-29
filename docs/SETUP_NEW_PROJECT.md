@@ -4,13 +4,15 @@
 
 ## Checklist (app repo)
 
-1. [ ] Install WholeLoop: `wholeloop init` in your app repo ([CLI.md](CLI.md)) — or legacy bash script
-2. [ ] Fill **`references/project-conventions.md`** — stack, **issue tracker** (`linear` \| `jira` \| `manual`), product repo path.
-3. [ ] Add **`workspace/runs/`** (install script creates it) and **`workspace/`** to **`.gitignore`**.
-4. [ ] **IDEs** — install script configures Cursor, Claude Code, and VS Code together ([IDE_SETUP.md](IDE_SETUP.md))
-5. [ ] Configure tracker: Linear/Jira MCP and/or **manual** paste — [TRACKERS.md](TRACKERS.md).
-6. [ ] Document in app **README**: product spec → stories → WholeLoop per `story_key`.
-7. [ ] (Optional) **CI** — path filters, forbidden dirs.
+1. [ ] Install CLI — [install/README.md](../install/README.md) (`uv tool install wholeloop-cli`)
+2. [ ] `wholeloop init` in your app repo — [CLI.md](CLI.md)
+3. [ ] `wholeloop conventions bootstrap` or `--conventions-from` team file — [PROJECT_CONVENTIONS.md](PROJECT_CONVENTIONS.md)
+4. [ ] Run **project-conventions** agent in IDE → approve `references/project-conventions.md`
+5. [ ] **`workspace/`** in **`.gitignore`** (`wholeloop init` adds it)
+6. [ ] **IDEs** — Cursor, Claude Code, VS Code via `wholeloop init` ([IDE_SETUP.md](IDE_SETUP.md))
+7. [ ] Tracker: Linear/Jira MCP and/or **manual** — [TRACKERS.md](TRACKERS.md)
+8. [ ] App **README**: product spec → stories → WholeLoop per `story_key`
+9. [ ] (Optional) **CI** — path filters, forbidden dirs
 
 ## Checklist (product repo)
 
@@ -26,18 +28,16 @@
 
 Context: `workspace/runs/<story-key>/context.json`.
 
-## Install (CLI — recommended)
+## Install
 
 ```bash
-pipx install wholeloop-cli   # https://pypi.org/project/wholeloop-cli/
+uv tool install wholeloop-cli==0.1.4
 cd /path/to/your-app
 wholeloop init
 wholeloop doctor
 ```
 
-See **[CLI.md](CLI.md)** for `update`, `--force`, Windows `--copy-ide-skills`.
-
-Legacy: `bash wholeloop/install/copy-skills-to-repo.sh /path/to/app` (uses CLI if installed).
+pipx, pip, Git: **[install/README.md](../install/README.md)**.
 
 ## Architecture
 

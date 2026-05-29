@@ -43,7 +43,9 @@ tracker_label: spec:SPEC-2025-042
 ## IDE setup (all three)
 
 ```bash
-wholeloop init    # after: pipx install wholeloop-cli — see CLI.md
+uv tool install wholeloop-cli    # once — see install/README.md
+cd /path/to/your-app
+wholeloop init
 ```
 
 | IDE | Skills | Instructions |

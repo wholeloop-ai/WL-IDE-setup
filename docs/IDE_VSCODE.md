@@ -2,7 +2,7 @@
 
 Same skills and pipeline as **Cursor** and **Claude Code**. Start with **[IDE_SETUP.md](IDE_SETUP.md)**.
 
-## What install creates
+## What `wholeloop init` creates
 
 | File | Role |
 |------|------|

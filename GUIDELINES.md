@@ -30,7 +30,8 @@ Use with **README.md** when onboarding a team.
 
 **Product repo (separate):** `specs/SPEC-*.md` from `references/SPEC.template.md`.
 
-Install: `wholeloop init` — [docs/CLI.md](docs/CLI.md).
+**Install CLI (once):** [install/README.md](install/README.md) — recommended `uv tool install wholeloop-cli`.  
+**Install into app:** `wholeloop init` — [docs/CLI.md](docs/CLI.md).
 
 ## 3. Issue tracker
 
@@ -75,13 +76,25 @@ LLM API keys live in the **IDE**, not in WholeLoop templates.
 - One **WholeLoop run** per story per app repo.
 - Cross-repo work: split stories or link `story_key` / spec_id in handoff notes.
 
-## 8. Updating skills
+## 8. Installing and updating
+
+**CLI (machine):**
 
 ```bash
-wholeloop update    # in app repo; keeps project-conventions.md
+uv tool install wholeloop-cli --upgrade --force
+```
+
+Other methods: [install/README.md](install/README.md).
+
+**Skills (app repo):**
+
+```bash
+wholeloop update    # refreshes .agents/skills/; keeps project-conventions.md
 ```
 
 Or diff `agents/skills/` in this template vs your app copy.
+
+**Conventions:** `wholeloop conventions bootstrap` or import a team file — [docs/PROJECT_CONVENTIONS.md](docs/PROJECT_CONVENTIONS.md).
 
 ## 9. Support
 

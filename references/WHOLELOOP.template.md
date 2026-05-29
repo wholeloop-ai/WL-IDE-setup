@@ -1,6 +1,6 @@
 # WholeLoop — agentic delivery workflow
 
-> Installed in your **app** repo by `install/copy-skills-to-repo.sh`.  
+> Installed in your **app** repo by `wholeloop init` (CLI: `wholeloop-cli` on PyPI).  
 > Works with **Cursor**, **Claude Code**, and **VS Code** (GitHub Copilot). Same skills, same pipeline.
 
 ## Before you start

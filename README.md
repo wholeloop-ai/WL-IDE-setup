@@ -9,7 +9,7 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — develop
 | Area | In this repo |
 |------|----------------|
 | **Skills** | `agents/skills/*/SKILL.md` |
-| **CLI** | `pipx install wholeloop-cli` → `wholeloop init` — [docs/CLI.md](docs/CLI.md) · [Publish](docs/PUBLISHING_CLI.md) |
+| **CLI** | `wholeloop-cli` on PyPI → `wholeloop init` — [install/](install/) · [docs/CLI.md](docs/CLI.md) |
 | **Trackers** | [docs/TRACKERS.md](docs/TRACKERS.md) — Linear, Jira, manual |
 | **Spec template** | `references/SPEC.template.md` (product repo) |
 | **Conventions** | `references/PROJECT_CONVENTIONS.template.md` |
@@ -24,13 +24,29 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — develop
 
 ## Quick start
 
-1. [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md)
-2. `uv tool install wholeloop-cli==0.1.2` — [PyPI](https://pypi.org/project/wholeloop-cli/)
-3. In your app: `wholeloop init` → `wholeloop doctor`
-4. Edit `.agents/skills/references/project-conventions.md`
-5. Product repo: `references/SPEC.template.md` → `specs/`
+1. Read [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md).
+2. Install the CLI (recommended: **uv**):
+
+   ```bash
+   uv tool install wholeloop-cli==0.1.4
+   ```
+
+   Other installers (pipx, pip, Git): **[install/README.md](install/README.md)**.
+
+3. In your **app** repo:
+
+   ```bash
+   wholeloop init
+   wholeloop doctor
+   wholeloop conventions bootstrap   # or --conventions-from team file
+   ```
+
+4. Run the **project-conventions** agent in your IDE → approve `.agents/skills/references/project-conventions.md`.
+5. **Product** repo: copy `references/SPEC.template.md` → `specs/`.
 
 [docs/SETUP_NEW_PROJECT.md](docs/SETUP_NEW_PROJECT.md) · [docs/IDE_SETUP.md](docs/IDE_SETUP.md) · [GUIDELINES.md](GUIDELINES.md)
+
+> **Version:** docs pin `0.1.4`. Check [PyPI](https://pypi.org/project/wholeloop-cli/) for the latest published release; use `uv tool install wholeloop-cli --upgrade --force` if your index lags.
 
 ## License
 

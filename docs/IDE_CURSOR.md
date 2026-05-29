@@ -2,10 +2,12 @@
 
 Same skills as **Claude Code** and **VS Code**. Start with **[IDE_SETUP.md](IDE_SETUP.md)**.
 
-## Install (one command)
+## Install
 
 ```bash
-bash wholeloop/install/copy-skills-to-repo.sh /path/to/your-app
+uv tool install wholeloop-cli    # install/README.md
+cd /path/to/your-app
+wholeloop init
 ```
 
 Creates:

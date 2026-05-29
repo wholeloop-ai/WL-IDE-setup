@@ -1,7 +1,7 @@
 # Skills — how to use this folder
 
 - Each subdirectory is one **agent**; `SKILL.md` is the prompt body.
-- Copy to **`<your-app>/.agents/skills/`** via `install/copy-skills-to-repo.sh`.
+- Installed into **`<your-app>/.agents/skills/`** with `wholeloop init` ([install/README.md](../../install/README.md)).
 - Specs: **product** repo (`references/SPEC.template.md`). Stories: **Linear**, **Jira**, or **manual** — see **`docs/TRACKERS.md`**.
 
 ## Default pipeline

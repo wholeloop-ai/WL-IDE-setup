@@ -5,7 +5,9 @@ Same skills as **Cursor** and **VS Code**. Start with **[IDE_SETUP.md](IDE_SETUP
 ## Install
 
 ```bash
-bash wholeloop/install/copy-skills-to-repo.sh /path/to/your-app
+uv tool install wholeloop-cli    # install/README.md
+cd /path/to/your-app
+wholeloop init
 ```
 
 Creates:

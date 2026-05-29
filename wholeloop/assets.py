@@ -15,7 +15,7 @@ def assets_root() -> Path:
     if (repo / "agents" / "skills").is_dir():
         return repo
     raise FileNotFoundError(
-        "WholeLoop assets not found. Reinstall: pipx install wholeloop-cli"
+        "WholeLoop assets not found. Reinstall: uv tool install wholeloop-cli"
     )
 
 

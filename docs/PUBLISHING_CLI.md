@@ -6,16 +6,16 @@ Command after install: **`wholeloop`**
 ## What clients will run
 
 ```bash
-pipx install wholeloop-cli
+uv tool install wholeloop-cli
 cd their-app
 wholeloop init
 wholeloop doctor
 ```
 
-Pin a version in onboarding docs:
+Pin a version in onboarding docs (see [install/README.md](../install/README.md)):
 
 ```bash
-pipx install wholeloop-cli==0.1.0
+uv tool install wholeloop-cli==0.1.4
 ```
 
 ---
@@ -99,8 +99,8 @@ pipx install --index-url https://test.pypi.org/simple/ wholeloop-cli
 2. [ ] Changelog / Git tag `v0.1.0`.
 3. [ ] `hatch build` + wheel contains all `SKILL.md` files.
 4. [ ] `hatch publish` to PyPI.
-5. [ ] Update client docs: `pipx install wholeloop-cli==X.Y.Z`.
-6. [ ] `pipx install wholeloop-cli==X.Y.Z` on a clean machine and run `wholeloop init`.
+5. [ ] Update version pins in `install/README.md`, `README.md`, and related docs.
+6. [ ] Smoke test: `uv tool install wholeloop-cli==X.Y.Z` → `wholeloop init` → `wholeloop doctor`.
 
 ---
 
