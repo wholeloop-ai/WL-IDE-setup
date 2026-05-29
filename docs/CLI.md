@@ -14,36 +14,70 @@ Homebrew blocks `pip install` on system Python. Use **pipx** (best for CLI tools
 brew install pipx
 pipx ensurepath
 # close and reopen the terminal
-pipx install wholeloop-cli==0.1.0
+pipx install wholeloop-cli==0.1.2
 wholeloop version
 ```
 
 ### pipx (recommended)
 
 ```bash
-pipx install wholeloop-cli==0.1.0
+pipx install wholeloop-cli==0.1.2
 ```
 
 From Git (private or before PyPI):
 
 ```bash
-pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.1.0
+pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.1.2
 ```
 
 **Publish to PyPI:** maintainers see [PUBLISHING_CLI.md](PUBLISHING_CLI.md).
 
-### uv
+### uv (recommended on macOS)
 
 ```bash
-uv tool install wholeloop-cli
-# or
-uv tool install git+https://github.com/wholeloop-ai/WL-IDE-setup.git
+uv tool install wholeloop-cli==0.1.2
+wholeloop version
 ```
+
+From Git (before PyPI or private fork):
+
+```bash
+uv tool install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.1.2
+```
+
+Editable (WholeLoop contributors):
+
+```bash
+uv tool install /path/to/WL-IDE-setup --force
+```
+
+#### `No solution found` / version missing on PyPI
+
+If `uv` says there is no `wholeloop-cli==0.1.2` but [pypi.org/project/wholeloop-cli](https://pypi.org/project/wholeloop-cli/) lists it, you almost certainly have **multiple package indexes** (e.g. a company mirror plus PyPI). `uv` only uses versions from the **first** index that lists the package (dependency-confusion protection).
+
+Use one of:
+
+```bash
+# Prefer the newest version across all configured indexes
+uv tool install wholeloop-cli==0.1.2 --force --index-strategy unsafe-best-match
+
+# Or install only from PyPI for this command
+uv tool install wholeloop-cli==0.1.2 --force --default-index https://pypi.org/simple --index https://pypi.org/simple
+```
+
+Check configured indexes:
+
+```bash
+uv config list 2>/dev/null || true
+env | grep -i '^UV_'
+```
+
+If your org mirror should serve WholeLoop releases, publish `0.1.2` there or ask infra to sync from PyPI.
 
 ### pip without pipx (not recommended on Homebrew Python)
 
 ```bash
-python3 -m pip install --user --break-system-packages wholeloop-cli==0.1.0
+python3 -m pip install --user --break-system-packages wholeloop-cli==0.1.2
 export PATH="$(python3 -m site --user-base)/bin:$PATH"
 ```
 
@@ -54,7 +88,7 @@ Or use a dedicated venv and call `wholeloop` via the venv’s `bin/` path.
 ```bash
 python3 -m venv ~/.venvs/wholeloop
 source ~/.venvs/wholeloop/bin/activate
-pip install wholeloop-cli==0.1.0
+pip install wholeloop-cli==0.1.2
 ```
 
 ### Editable (WholeLoop contributors)
@@ -77,6 +111,7 @@ Options:
 |------|--------|
 | `--force` / `-f` | Overwrite existing install |
 | `--copy-ide-skills` | Copy skills into `.cursor`/`.claude` instead of symlinks |
+| `--conventions-from FILE` | Use team `project-conventions.md` instead of CLI README bootstrap |
 | `path` | Target directory (default: current directory) |
 
 ### Examples
@@ -99,7 +134,9 @@ wholeloop init --force
 
 ```bash
 wholeloop doctor                      # verify layout, conventions, symlinks
-wholeloop conventions bootstrap       # re-extract conventions from README/stack (no AI)
+wholeloop conventions bootstrap       # re-extract from README/stack, or prompt for team file
+wholeloop conventions bootstrap --from FILE
+wholeloop conventions import FILE   # team file from a senior dev (validates template)
 wholeloop update                      # refresh skills; keeps project-conventions.md
 wholeloop version
 ```
@@ -143,4 +180,4 @@ Then run the **project-conventions** agent in your IDE to confirm and complete. 
 pipx run wholeloop-cli init ./apps/web --force
 ```
 
-Pin version: `pipx install wholeloop-cli==0.1.1` (or `uv tool install wholeloop-cli==0.1.1`).
+Pin version: `uv tool install wholeloop-cli==0.1.2`.

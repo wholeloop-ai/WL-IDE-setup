@@ -21,6 +21,7 @@ You **interview** the developer, use repo docs for drafts only, and **never** tr
 ## When to run
 
 - After `wholeloop init` (CLI left a bootstrap file with `<!-- wholeloop:cli-bootstrap -->`).
+- After a team import (`<!-- wholeloop:team-import -->`) — skim for repo-specific paths/commands even if the file looked complete on another machine.
 - Stack, layout, or tracker setup changed.
 - `wholeloop doctor` reports conventions need completion.
 

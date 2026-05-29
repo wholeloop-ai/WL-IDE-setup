@@ -25,7 +25,7 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — develop
 ## Quick start
 
 1. [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md)
-2. `pipx install wholeloop-cli` from [PyPI](https://pypi.org/project/wholeloop-cli/) (or `pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git`)
+2. `uv tool install wholeloop-cli==0.1.2` — [PyPI](https://pypi.org/project/wholeloop-cli/)
 3. In your app: `wholeloop init` → `wholeloop doctor`
 4. Edit `.agents/skills/references/project-conventions.md`
 5. Product repo: `references/SPEC.template.md` → `specs/`

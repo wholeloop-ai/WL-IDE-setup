@@ -5,11 +5,14 @@ from __future__ import annotations
 import os
 import re
 import shutil
-import sys
 from pathlib import Path
 
 from wholeloop.assets import references_dir, skills_src
-from wholeloop.conventions import bootstrap_conventions
+from wholeloop.conventions import (
+    bootstrap_conventions,
+    ensure_conventions_layout,
+    import_conventions,
+)
 
 WORKSPACE_GITIGNORE_BLOCK = "\n# WholeLoop ephemeral runs\nworkspace/\n"
 
@@ -76,6 +79,7 @@ def install_app(
     *,
     force: bool = False,
     copy_ide_skills: bool = False,
+    conventions_from: Path | None = None,
 ) -> list[str]:
     """Install skills and IDE wiring. Returns human-readable log lines."""
     app = app.resolve()
@@ -99,15 +103,17 @@ def install_app(
     shutil.copytree(src, dest)
     lines.append(f"write .agents/skills/ ({len(list(dest.rglob('SKILL.md')))} skills)")
 
-    ref_out = dest / "references"
-    ref_out.mkdir(parents=True, exist_ok=True)
+    ensure_conventions_layout(app)
     try:
-        _, conv_line = bootstrap_conventions(app, force=force or not (ref_out / "project-conventions.md").exists())
+        if conventions_from is not None:
+            _, conv_line = import_conventions(app, conventions_from, force=True)
+        else:
+            _, conv_line = bootstrap_conventions(app, force=True)
         lines.append(conv_line)
-    except FileNotFoundError:
-        template = references_dir() / "PROJECT_CONVENTIONS.template.md"
-        shutil.copy2(template, ref_out / "project-conventions.md")
-        lines.append("write .agents/skills/references/project-conventions.md (template)")
+    except FileNotFoundError as e:
+        raise FileNotFoundError(f"Could not set project-conventions.md: {e}") from e
+    except ValueError:
+        raise
 
     runs = app / "workspace" / "runs"
     runs.mkdir(parents=True, exist_ok=True)
@@ -177,9 +183,16 @@ def update_skills(
         f"write .agents/skills/ ({len(list(dest.rglob('SKILL.md')))} skills refreshed)"
     ]
 
+    ensure_conventions_layout(app)
     if backup is not None:
         conventions.write_text(backup, encoding="utf-8")
         lines.append("keep  project-conventions.md")
+    else:
+        try:
+            _, conv_line = bootstrap_conventions(app, force=True)
+            lines.append(conv_line)
+        except FileNotFoundError:
+            lines.append("warn  run: wholeloop conventions bootstrap")
 
     for parent in (".cursor", ".claude"):
         lines.append(
@@ -187,5 +200,7 @@ def update_skills(
                 app, parent, force=True, copy_fallback=copy_ide_skills
             )
         )
+
+    lines.append("hint  Run project-conventions agent in IDE to confirm conventions")
 
     return lines

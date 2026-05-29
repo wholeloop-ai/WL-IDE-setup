@@ -5,10 +5,26 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 from pathlib import Path
 
+from wholeloop.assets import references_dir
+
 BOOTSTRAP_MARKER = "<!-- wholeloop:cli-bootstrap -->"
+IMPORTED_MARKER = "<!-- wholeloop:team-import -->"
 AGENT_TODO = "<!-- TODO: confirm with project-conventions agent -->"
+
+REQUIRED_SECTIONS = (
+    "## 1. What this product is",
+    "## 2. Repository layout",
+    "## 3. Stack",
+    "## 4. Rules agents must follow",
+    "## 5. Issue tracker",
+    "## 6. WholeLoop run paths",
+    "## 7. Definition of Done",
+    "## 8. Links",
+)
+PLACEHOLDER_MARKERS = ("{{PROJECT_NAME}}", "{{PRODUCT_REPO}}")
 
 README_CANDIDATES = ("README.md", "Readme.md", "readme.md", "README.rst")
 DOC_GLOBS = ("docs/**/*.md", "doc/**/*.md")
@@ -255,21 +271,138 @@ The **project-conventions** agent should read these and ask you to confirm extra
     return body
 
 
-def bootstrap_conventions(app: Path, *, force: bool = False) -> tuple[Path, str]:
-    """Write or refresh CLI bootstrap at conventions path. Returns (path, log line)."""
+def validate_conventions_content(text: str) -> tuple[bool, list[str]]:
+    """Check a file looks like a filled WholeLoop conventions doc (not the raw template)."""
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    if not text.strip():
+        errors.append("file is empty")
+        return False, errors
+
+    for marker in PLACEHOLDER_MARKERS:
+        if marker in text:
+            errors.append(f"still contains template placeholder {marker}")
+
+    missing = [h for h in REQUIRED_SECTIONS if h not in text]
+    if missing:
+        errors.append(
+            "missing sections: " + ", ".join(s.replace("## ", "") for s in missing)
+        )
+
+    if BOOTSTRAP_MARKER in text:
+        warnings.append("CLI bootstrap marker present — run project-conventions agent to confirm")
+    if AGENT_TODO in text:
+        warnings.append("TODO markers present — confirm with project-conventions agent")
+
+    messages = errors + [f"note: {w}" for w in warnings]
+    return len(errors) == 0, messages
+
+
+def _conventions_dest(app: Path) -> Path:
+    return app / ".agents" / "skills" / "references" / "project-conventions.md"
+
+
+def ensure_conventions_layout(app: Path) -> Path:
+    """Require .agents/skills/ and ensure references/ exists (older installs may lack it)."""
+    skills = app / ".agents" / "skills"
+    if not skills.is_dir():
+        raise FileNotFoundError(
+            "WholeLoop is not installed in this repo — run: wholeloop init"
+        )
+    refs = skills / "references"
+    refs.mkdir(parents=True, exist_ok=True)
+    return refs
+
+
+def prompt_conventions_source() -> Path | None:
+    """Ask interactively for a team WholeLoop conventions file (TTY only)."""
+    if not sys.stdin.isatty():
+        return None
+    try:
+        answer = input(
+            "Do you have a WholeLoop project-conventions.md from your team? [y/N]: "
+        ).strip().lower()
+        if answer not in ("y", "yes"):
+            return None
+        path_str = input("Path to that file: ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print(file=sys.stderr)
+        return None
+    if not path_str:
+        return None
+    return Path(path_str).expanduser()
+
+
+def import_conventions(
+    app: Path,
+    source: Path,
+    *,
+    force: bool = False,
+) -> tuple[Path, str]:
+    """Validate and install a team conventions file as the repo's first version."""
     app = app.resolve()
-    dest = app / ".agents" / "skills" / "references" / "project-conventions.md"
+    dest = _conventions_dest(app)
+    source = source.expanduser().resolve()
+
+    if not source.is_file():
+        raise FileNotFoundError(f"Conventions file not found: {source}")
+
+    if dest.exists() and not force:
+        existing = _read_text(dest)
+        if BOOTSTRAP_MARKER not in existing and "{{PROJECT_NAME}}" not in existing:
+            return dest, "keep  project-conventions.md (already customized; use --force to replace)"
+
+    ensure_conventions_layout(app)
+
+    text = _read_text(source, limit=500_000)
+    ok, messages = validate_conventions_content(text)
+    if not ok:
+        detail = "\n  ".join(messages)
+        raise ValueError(
+            f"{source} does not look like a filled WholeLoop conventions file:\n  {detail}"
+        )
+
+    if IMPORTED_MARKER not in text:
+        note = f"""{IMPORTED_MARKER}
+> **Team import** (CLI). Copied from `{source.name}`. Skim with the **project-conventions** agent
+> if anything is repo-specific; approve before heavy pipeline work.
+
+"""
+        if text.startswith("# "):
+            first_nl = text.index("\n")
+            text = text[:first_nl] + "\n\n" + note + text[first_nl:]
+        else:
+            text = note + text
+
+    dest.write_text(text, encoding="utf-8")
+    return dest, f"write .agents/skills/references/project-conventions.md (imported from {source})"
+
+
+def bootstrap_conventions(
+    app: Path,
+    *,
+    force: bool = False,
+    from_file: Path | None = None,
+    prompt_import: bool = False,
+) -> tuple[Path, str]:
+    """Write CLI bootstrap or import a team conventions file. Returns (path, log line)."""
+    app = app.resolve()
+    dest = _conventions_dest(app)
+    ensure_conventions_layout(app)
+
+    source = from_file
+    if source is None and prompt_import:
+        source = prompt_conventions_source()
+    if source is not None:
+        return import_conventions(app, source, force=force)
+
     template_path = references_dir() / "PROJECT_CONVENTIONS.template.md"
 
     if dest.exists() and not force:
         text = _read_text(dest)
         if BOOTSTRAP_MARKER not in text and "{{PROJECT_NAME}}" not in text:
             return dest, "keep  project-conventions.md (already customized)"
-        if not force:
-            pass  # allow refresh of bootstrap / template placeholders
-
-    if not dest.parent.exists():
-        raise FileNotFoundError("Run wholeloop init first — missing .agents/skills/")
 
     template = _read_text(template_path)
     if not template:
