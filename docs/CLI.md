@@ -105,7 +105,7 @@ Removed from the bundle in v0.2: `spec-validator`, `analyser`, `tracker-intake` 
 ## CI / monorepo
 
 ```bash
-uvx --from wholeloop-cli==0.2.0 wholeloop init ./apps/web --force
+uvx --from wholeloop-cli==0.2.1 wholeloop init ./apps/web --force
 ```
 
 See [install/README.md](../install/README.md) for pinned installs.

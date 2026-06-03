@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- **project-conventions** skill v1.1: migrate existing conventions from v0.1 → v0.2 on developer request.
+
 ## 0.2.0
 
 - **project-conventions** skill v1.1: migrate existing `project-conventions.md` from v0.1 → v0.2 when dev requests (preserve confirmed content).

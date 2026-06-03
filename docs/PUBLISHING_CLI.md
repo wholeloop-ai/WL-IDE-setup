@@ -15,7 +15,7 @@ wholeloop doctor
 Pin a version in onboarding docs (see [install/README.md](../install/README.md)):
 
 ```bash
-uv tool install wholeloop-cli==0.2.0
+uv tool install wholeloop-cli==0.2.1
 ```
 
 ---
