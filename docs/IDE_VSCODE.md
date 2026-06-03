@@ -15,20 +15,20 @@ VS Code does **not** auto-discover `SKILL.md` like Cursor or Claude Code. You in
 ## Example prompts (Copilot Chat)
 
 ```
-Follow WHOLELOOP.md. Run tracker-intake for SPEC-2025-042 (Linear/Jira MCP or paste cohort table).
+Follow WHOLELOOP.md. Run spec-review for ARTIFACT-WAL-042 (Linear/Jira MCP or paste epic + stories).
 ```
 
 ```
-Follow WHOLELOOP.md and spec-validator for story PROJ-128 (or ACME-128).
+Follow WHOLELOOP.md and planner for run PROJ-SPEC-042 after spec-review is approved.
 ```
 
 ```
-Continue WholeLoop from workspace/runs/ACME-128/context.json — run analyser per WHOLELOOP.md.
+Continue WholeLoop from workspace/runs/PROJ-SPEC-042/PROJ-101/plan.md — run builder per WHOLELOOP.md.
 ```
 
 ## Issue tracker
 
-**Linear** or **Jira MCP** in VS Code when available. **`manual`**: paste cohort + story AC in chat — same skills. See [TRACKERS.md](TRACKERS.md).
+**Linear** or **Jira MCP** in VS Code when available. **`manual`**: paste epic + stories at spec-review — same skills. See [TRACKERS.md](TRACKERS.md).
 
 ## Optional
 
@@ -37,4 +37,4 @@ Continue WholeLoop from workspace/runs/ACME-128/context.json — run analyser pe
 
 ## Parity tip
 
-Teams often run **spec-validator** and **planner** gates in Cursor or Claude Code (skill discovery), and use VS Code for editing — same `context.json` in git-ignored `workspace/`.
+Teams often run **spec-review** and **planner** gates in Cursor or Claude Code (skill discovery), and use VS Code for editing — same `context.json` in git-ignored `workspace/`.

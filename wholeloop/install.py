@@ -13,6 +13,14 @@ from wholeloop.conventions import (
     ensure_conventions_layout,
     import_conventions,
 )
+from wholeloop.pipeline import PIPELINE_LINE, audit_skills, list_installed_skills
+
+IDE_REFERENCE_FILES: tuple[tuple[str, str], ...] = (
+    ("WHOLELOOP.md", "WHOLELOOP.template.md"),
+    ("CLAUDE.md", "CLAUDE.template.md"),
+    (".github/copilot-instructions.md", "copilot-instructions.template.md"),
+    (".cursor/rules/wholeloop.mdc", "WHOLELOOP_CURSOR_RULE.template.mdc"),
+)
 
 WORKSPACE_GITIGNORE_BLOCK = "\n# WholeLoop ephemeral runs\nworkspace/\n"
 
@@ -74,6 +82,35 @@ def _link_ide_skills(app: Path, parent: str, *, force: bool, copy_fallback: bool
         return f"copy  {parent}/skills (symlink unavailable)"
 
 
+def sync_reference_files(app: Path, *, force: bool = True) -> list[str]:
+    """Refresh WHOLELOOP.md, IDE instructions, and Cursor rules from the CLI bundle."""
+    refs = references_dir()
+    lines: list[str] = []
+    for dest_rel, src_name in IDE_REFERENCE_FILES:
+        src = refs / src_name
+        if not src.is_file():
+            lines.append(f"warn  missing bundle template {src_name}")
+            continue
+        dest = app / dest_rel
+        if dest.exists() and not force:
+            lines.append(f"keep  {dest_rel}")
+            continue
+        lines.append(_install_file(dest, src, force=True, label=dest_rel))
+    return lines
+
+
+def _skills_audit_lines(dest: Path) -> list[str]:
+    missing, legacy, _ = audit_skills(dest)
+    lines: list[str] = []
+    if missing:
+        lines.append(f"warn  missing expected skills: {', '.join(missing)}")
+    if legacy:
+        lines.append(
+            f"warn  legacy v0.1 skills still present: {', '.join(legacy)}"
+        )
+    return lines
+
+
 def install_app(
     app: Path,
     *,
@@ -101,7 +138,10 @@ def install_app(
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(src, dest)
-    lines.append(f"write .agents/skills/ ({len(list(dest.rglob('SKILL.md')))} skills)")
+    lines.append(
+        f"write .agents/skills/ ({len(list_installed_skills(dest))} skills)"
+    )
+    lines.extend(_skills_audit_lines(dest))
 
     ensure_conventions_layout(app)
     try:
@@ -153,6 +193,7 @@ def install_app(
             )
         )
 
+    lines.append(f"hint  Pipeline v0.2: {PIPELINE_LINE}")
     lines.append("hint  Run project-conventions agent in IDE to confirm and complete conventions")
 
     return lines
@@ -163,6 +204,7 @@ def update_skills(
     *,
     keep_conventions: bool = True,
     copy_ide_skills: bool = False,
+    refresh_docs: bool = True,
 ) -> list[str]:
     """Refresh .agents/skills from the CLI bundle; optionally keep project-conventions.md."""
     app = app.resolve()
@@ -180,8 +222,12 @@ def update_skills(
     shutil.rmtree(dest)
     shutil.copytree(skills_src(), dest)
     lines = [
-        f"write .agents/skills/ ({len(list(dest.rglob('SKILL.md')))} skills refreshed)"
+        f"write .agents/skills/ ({len(list_installed_skills(dest))} skills refreshed)"
     ]
+    lines.extend(_skills_audit_lines(dest))
+
+    if refresh_docs:
+        lines.extend(sync_reference_files(app, force=True))
 
     ensure_conventions_layout(app)
     if backup is not None:
@@ -201,6 +247,7 @@ def update_skills(
             )
         )
 
+    lines.append(f"hint  Pipeline v0.2: {PIPELINE_LINE}")
     lines.append("hint  Run project-conventions agent in IDE to confirm conventions")
 
     return lines

@@ -62,10 +62,8 @@ After approval, the bootstrap marker is removed.
 
 | Agent | Depends on |
 |-------|------------|
-| tracker-intake | Tracker provider, linking spec ↔ stories |
-| spec-validator | Product rules, forbidden areas |
-| analyser | Repo layout |
-| planner | Allowed paths, routing |
+| spec-review | Tracker provider, spec/epic linking, forbidden areas, stack |
+| planner | Allowed paths, routing, release strategy |
 | builder | Stack, tests, code style |
 | migration | Migrations directory |
 | ui-tester | Dev server URL |

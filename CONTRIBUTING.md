@@ -7,8 +7,10 @@
 ```bash
 uv tool install . --force
 # or: pip install -e .
+wholeloop skills
 wholeloop init /tmp/test-app
 wholeloop doctor /tmp/test-app
+wholeloop update /tmp/test-app
 uvx hatch build   # wheel includes agents/ via hatch force-include
 ```
 

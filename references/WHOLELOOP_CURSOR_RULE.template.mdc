@@ -11,9 +11,9 @@ Read **`WHOLELOOP.md`** at the repo root first. Skills are canonical under **`.a
 When the user works on a product **spec** and user **stories**:
 
 1. Read `project-conventions.md` — **Issue tracker** (`linear` | `jira` | `manual`).
-2. **tracker-intake** (optional) → **spec-validator** → human gate → **analyser** → **planner** → … → **handoff**.
-3. Context: `workspace/runs/<story-key>/context.json`.
-4. Use Linear/Jira MCP when configured; **manual** = pasted cohort and story text. Never invent issue URLs.
-5. spec-validator may **suggest** spec/issue edits; human applies before `approve`.
+2. **spec-review** → human gate → *(optional ui-ux-designer B)* → **planner** → **builder|manual** → **reviewer** → **pr-agent** → **handoff**.
+3. Context: `workspace/runs/<run-key>/context.json`; plans: `plan.md` per story.
+4. Use Linear/Jira MCP when configured; **manual** = paste epic + stories at spec-review. Never invent issue URLs.
+5. spec-review compiles findings; human `approve` before planner.
 
 Other IDEs on this repo use the same files (`CLAUDE.md`, `.github/copilot-instructions.md`).

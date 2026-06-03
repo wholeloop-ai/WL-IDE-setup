@@ -1,24 +1,35 @@
-# {{PROJECT_NAME}} — project conventions (template)
+# WL-IDE-setup — project conventions (template)
 
-> Replace `{{PROJECT_NAME}}` and all sections with your real stack. Agents load this file **before** touching code.
+<!-- wholeloop:cli-bootstrap -->
+> **CLI bootstrap** (no AI). Review every section, then run the **project-conventions** agent
+> in your IDE to complete, correct, and confirm with you before relying on other WholeLoop agents.
+
+
+> Replace `WL-IDE-setup` and all sections with your real stack. Agents load this file **before** touching code.
 
 ## 1. What this product is
 
-- One paragraph: user, problem, what is **out of scope** (e.g. payments).
+_No README found — describe the product with the **project-conventions** agent._
+
+- **Out of scope:** <!-- TODO: confirm with project-conventions agent -->
+
 
 ## 2. Repository layout
 
-- Tree of important directories (`src/`, `api/`, `packages/foo`, …).
-- **Product repo** (specs): absolute or relative path from this app repo (e.g. `../{{PRODUCT_REPO}}/specs/`).
+- <!-- TODO: confirm with project-conventions agent -->
+
+- **Product repo (specs):** <!-- TODO: confirm with project-conventions agent --> e.g. `../product-repo/specs/`
+
 
 ## 3. Stack
 
 | Layer | Technology | Version / notes |
 |-------|------------|-----------------|
-| Runtime | | |
-| Package manager | | |
-| Tests | | |
-| Linter / formatter | | |
+| Runtime | <!-- TODO: confirm with project-conventions agent --> | |
+| Package manager | <!-- TODO: confirm with project-conventions agent --> | |
+| Tests | <!-- TODO: confirm with project-conventions agent --> | |
+| Linter / formatter | <!-- TODO: confirm with project-conventions agent --> | |
+
 
 ## 4. Rules agents must follow
 
@@ -31,7 +42,7 @@
 
 | Setting | Value |
 |---------|--------|
-| **provider** | `linear` \| `jira` \| `manual` |
+| **provider** | <!-- TODO: confirm with project-conventions agent -->| `jira` \| `manual` |
 | **Default spec path** | `../product-repo/specs/{spec_id}.md` |
 
 PM creates stories **after** spec `status: approved`. See WholeLoop **`docs/TRACKERS.md`**.

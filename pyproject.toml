@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wholeloop-cli"
-version = "0.1.4"
+version = "0.2.0"
 description = "Install WholeLoop agent skills into app repos (Cursor, Claude Code, VS Code)"
 readme = "README.md"
 license = "MIT"

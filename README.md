@@ -17,21 +17,30 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — develop
 
 ## Principles
 
-1. **Spec in product repo** — Stories in your issue tracker (or manual list).
-2. **One run per story** — `workspace/runs/<story-key>/context.json`.
-3. **Human gates** — After spec-validator and planner (and PR when applicable).
+1. **Spec in product repo** — ARTIFACT-WAL; stories in your issue tracker (or manual list).
+2. **One run per delivery** — `workspace/runs/<run-key>/context.json` (+ `plan.md` per story).
+3. **Human gates** — After spec-review and planner (and PR when applicable).
 4. **IDE-native** — Skills + MCP or pasted stories; no WholeLoop server to deploy.
 
 ## Quick start
 
 1. Read [docs/WORKFLOW_PRODUCT_LINEAR.md](docs/WORKFLOW_PRODUCT_LINEAR.md).
-2. Install the CLI (recommended: **uv**):
+2. Install the CLI:
+
+   **macOS (Homebrew):**
 
    ```bash
-   uv tool install wholeloop-cli==0.1.4
+   brew install uv
+   uv tool install wholeloop-cli
    ```
 
-   Other installers (pipx, pip, Git): **[install/README.md](install/README.md)**.
+   **Any OS (uv already installed):**
+
+   ```bash
+   uv tool install wholeloop-cli
+   ```
+
+   pipx, pip, Git, upgrades: **[install/README.md](install/README.md)**.
 
 3. In your **app** repo:
 
@@ -46,7 +55,7 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — develop
 
 [docs/SETUP_NEW_PROJECT.md](docs/SETUP_NEW_PROJECT.md) · [docs/IDE_SETUP.md](docs/IDE_SETUP.md) · [GUIDELINES.md](GUIDELINES.md)
 
-> **Version:** docs pin `0.1.4`. Check [PyPI](https://pypi.org/project/wholeloop-cli/) for the latest published release; use `uv tool install wholeloop-cli --upgrade --force` if your index lags.
+> **Version:** skills and docs target **v0.2**. Check [PyPI](https://pypi.org/project/wholeloop-cli/) for the latest CLI; use `uv tool install wholeloop-cli --upgrade --force` after publishing a new release.
 
 ## License
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.0
+
+- **CLI:** `wholeloop update` refreshes WHOLELOOP.md and IDE instruction files by default; `--no-refresh-docs` to skip.
+- **CLI:** `wholeloop skills` lists bundled agents; `wholeloop doctor` validates v0.2 skills and warns on legacy installs.
+- **CLI:** `python -m wholeloop` supported via `wholeloop/__main__.py`.
+- **Breaking:** Merged **spec-validator**, **analyser**, and **tracker-intake** into **spec-review** (v2 pipeline).
+- New skills: **spec-review**, **ui-ux-designer** (Phase A/B), **builder** (plan.md execution).
+- **planner** v2.0: three epic modes + mid-run refinement (Mode 4) + `release_strategy` in context.json.
+- **reviewer** v2.0: plan fidelity, `story_reviews` block; runs per story before **pr-agent**.
+- **pr-agent** v2.0: story vs epic release strategy.
+- **handoff** v3.0: `delivery_notes` → scope.yaml, roadmap signals, `.done` marker.
+- Docs and templates updated for v0.2 run layout (`workspace/runs/<run-key>/`).
+
 ## 0.1.4
 
 - Fix `conventions bootstrap` on repos missing `.agents/skills/references/` (create folder; was wrongly reported as missing `.agents/skills/` in 0.1.3).

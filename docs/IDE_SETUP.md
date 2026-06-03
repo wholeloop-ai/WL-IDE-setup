@@ -5,7 +5,8 @@ WholeLoop uses **one canonical skills tree** (`.agents/skills/`) and wires each 
 ## Install
 
 ```bash
-uv tool install wholeloop-cli==0.1.4    # see install/README.md for pipx, pip, Git
+brew install uv                          # macOS — see install/README.md
+uv tool install wholeloop-cli
 cd /path/to/your-app
 wholeloop init
 wholeloop doctor
@@ -40,10 +41,10 @@ wholeloop doctor
 ## Same workflow everywhere
 
 ```text
-tracker-intake → spec-validator → analyser → planner → … → handoff
+spec-review → planner → builder|manual → reviewer → pr-agent → handoff
 ```
 
-Context: `workspace/runs/<story-key>/context.json`.
+Context: `workspace/runs/<run-key>/context.json`.
 
 ## Symlinks and Windows
 
@@ -60,6 +61,6 @@ Edit **`.agents/skills/`** only — never fork copies under `.cursor/` or `.clau
 | Problem | Fix |
 |---------|-----|
 | Cursor does not suggest skills | Check `.cursor/skills` symlink; reload window |
-| Claude `/spec-validator` missing | Restart Claude Code; verify `.claude/skills` |
+| Claude `/spec-review` missing | Restart Claude Code; verify `.claude/skills` |
 | VS Code ignores pipeline | Reference `WHOLELOOP.md` + skill path in first message |
 | Drift between folders | Edit `.agents/skills` only; run `wholeloop update` |

@@ -19,7 +19,7 @@ Creates:
 
 ## Usage
 
-- `/tracker-intake`, `/spec-validator`, …
+- `/spec-review`, `/planner`, `/builder`, …
 - Configure **Linear** or **Jira** in `.mcp.json`, or use `manual` — [TRACKERS.md](TRACKERS.md)
 
 ## First-time note

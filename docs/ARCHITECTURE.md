@@ -1,51 +1,48 @@
 # WholeLoop architecture
 
-## Pipeline
+## Pipeline (v0.2)
 
 See **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)** and **[TRACKERS.md](TRACKERS.md)**.
 
 ```text
-Product spec (approved) ──► Story cohort (Linear / Jira MCP or manual)
-        │
-        ▼
-tracker-intake (optional) ──► spec-validator ──► gate (human)
-   Phase A: spec implementability
-   Phase B: story + cohort coherence (+ suggested edits)
-        │
-        ▼
-analyser → planner → gate (human) → … → pr-agent → gate → handoff
+spec-review → [ui-ux-designer B] → planner → builder|manual
+  → reviewer → pr-agent → handoff
 ```
 
-Optional agents: `ui-ux-designer`, `migration`, `ui-tester`.
+Optional agents: `ui-ux-designer` Phase A (product repo), `migration`, `ui-tester`.
 
-Context per story: `workspace/runs/<story-key>/context.json`.
+Context per run: `workspace/runs/<run-key>/context.json` (+ per-story `plan.md`, `review-report.md`).
 
 ## Context object
 
-Each agent appends JSON blocks (`spec_validation`, `codebase_analysis`, `execution_plan`, `build`, `review`, `pr`, `handoff`, …). The next agent reads the full file plus `project-conventions.md`.
+| Block | Owner |
+|-------|--------|
+| `run.*`, `spec_review_notes` | spec-review |
+| `release_strategy` | planner |
+| `story_reviews.<key>` | reviewer |
+| `pr` | pr-agent |
 
 Humans (or the IDE agent) advance the pipeline — there is **no** background runner in this template.
 
 ## Gates
 
-| Gate | After |
-|------|--------|
-| Spec / story | **spec-validator** |
-| Plan | **planner** |
-| Design | **ui-ux-designer** (if used) |
-| PR | **pr-agent** |
+| Gate | After | Required |
+|------|-------|----------|
+| Spec / epic review | spec-review | yes |
+| Design | ui-ux-designer Phase B | optional |
+| Plan | planner | yes |
+| PR | pr-agent | yes |
+| Handoff | handoff | yes |
 
 Declared in skill frontmatter (`human_gate: true`) and in **WHOLELOOP.md**.
 
 ## Extending agents
 
 1. Add `agents/skills/my-agent/SKILL.md`.
-2. Update **planner** routes for when to invoke it.
+2. Update **planner** if the agent belongs in the default route.
 3. Run `wholeloop update` in app repos after publishing template changes.
-
-Keep **planner** as the single place that defines agent order per ticket type.
 
 ## Out of scope (this repo)
 
 - Python orchestrator, inbox watchers, n8n flows — not part of the supported developer experience.
-- Automation is via **IDE + skills + MCP** (or manual story paste).
+- Product-repo agents (`build-spec`, `brainstorm-feature`, …) live in the product template, not this bundle.

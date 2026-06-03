@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from wholeloop import __version__
 from wholeloop.conventions import is_bootstrap_pending
+from wholeloop.pipeline import (
+    PIPELINE_LINE,
+    PIPELINE_VERSION,
+    REQUIRED_SKILL_DIRS,
+    audit_skills,
+    is_v02_pipeline_doc,
+)
 
 
 def run_doctor(app: Path) -> tuple[bool, list[str]]:
@@ -21,13 +29,32 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
             ok = False
 
     lines.append(f"Checking {app}")
+    lines.append(f"  CLI version: wholeloop {__version__} (pipeline v{PIPELINE_VERSION})")
     lines.append("")
 
     skills = app / ".agents" / "skills"
     check(skills.is_dir(), ".agents/skills/", "missing .agents/skills/ — run: wholeloop init")
 
+    if skills.is_dir():
+        missing, legacy, installed = audit_skills(skills)
+        for name in REQUIRED_SKILL_DIRS:
+            if name in installed:
+                lines.append(f"  ✓ skill {name}/")
+            else:
+                lines.append(f"  ✗ skill {name}/ missing — run: wholeloop update")
+                ok = False
+        for name in legacy:
+            lines.append(
+                f"  ✗ legacy skill {name}/ (removed in v0.2) — run: wholeloop update"
+            )
+            ok = False
+
     whooleloop = app / "WHOLELOOP.md"
     check(whooleloop.is_file(), "WHOLELOOP.md", "missing WHOLELOOP.md")
+    if whooleloop.is_file() and not is_v02_pipeline_doc(whooleloop):
+        lines.append(
+            "  ⚠ WHOLELOOP.md looks like v0.1 — run: wholeloop update (refreshes docs)"
+        )
 
     runs = app / "workspace" / "runs"
     check(runs.is_dir(), "workspace/runs/", "missing workspace/runs/")
@@ -57,6 +84,10 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
             "conventions mention issue tracker",
             "add Issue tracker section (linear | jira | manual)",
         )
+        if "spec-validator" in text or "tracker-intake" in text:
+            lines.append(
+                "  ⚠ conventions mention v0.1 agents — update wording to spec-review"
+            )
     else:
         check(False, "", "missing references/project-conventions.md")
 
@@ -68,10 +99,13 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
             lines.append(f"  ~ {parent}/skills is a copy (OK) or stale — prefer symlink")
         else:
             lines.append(f"  ✗ {parent}/skills missing — re-run: wholeloop init")
+            ok = False
 
     lines.append("")
     if ok:
-        lines.append("Ready for WholeLoop. Next: enable Linear/Jira MCP or use manual mode (docs/TRACKERS.md).")
+        lines.append(f"Ready for WholeLoop v{PIPELINE_VERSION}.")
+        lines.append(f"  Pipeline: {PIPELINE_LINE}")
+        lines.append("  Next: spec-review with ARTIFACT-WAL and/or epic (docs/TRACKERS.md).")
     else:
         lines.append("Fix issues above, then: wholeloop doctor")
 

@@ -7,14 +7,31 @@ import sys
 from pathlib import Path
 
 from wholeloop import __version__
+from wholeloop.assets import skills_src
 from wholeloop.doctor import run_doctor
 from wholeloop.install import install_app, update_skills
 from wholeloop.conventions import bootstrap_conventions, import_conventions
+from wholeloop.pipeline import (
+    OPTIONAL_SKILL_DIRS,
+    PIPELINE_LINE,
+    PIPELINE_VERSION,
+    REMOVED_SKILL_DIRS,
+    REQUIRED_SKILL_DIRS,
+    list_installed_skills,
+)
 
 
 def _print_lines(lines: list[str]) -> None:
     for line in lines:
         print(line)
+
+
+def _next_steps_v02() -> None:
+    print("  Next steps:")
+    print("    1. Run project-conventions agent in IDE (confirm CLI bootstrap)")
+    print("    2. Read WHOLELOOP.md — pipeline v0.2")
+    print("    3. wholeloop doctor")
+    print("    4. Start a run: spec-review (ARTIFACT-WAL and/or epic ref)")
 
 
 def cmd_init(args: argparse.Namespace) -> int:
@@ -32,12 +49,9 @@ def cmd_init(args: argparse.Namespace) -> int:
 
     _print_lines(lines)
     print()
-    print("WholeLoop installed (Cursor, Claude Code, VS Code).")
+    print(f"WholeLoop {__version__} installed (Cursor, Claude Code, VS Code).")
     print(f"  App:         {app}")
-    print("  Next steps:")
-    print("    1. Run project-conventions agent in IDE (confirm CLI bootstrap)")
-    print("    2. Read WHOLELOOP.md in this repo")
-    print("    3. wholeloop doctor")
+    _next_steps_v02()
     return 0
 
 
@@ -48,6 +62,7 @@ def cmd_update(args: argparse.Namespace) -> int:
             app,
             keep_conventions=args.keep_conventions,
             copy_ide_skills=args.copy_ide_skills,
+            refresh_docs=not args.no_refresh_docs,
         )
     except FileNotFoundError as e:
         print(f"error: {e}", file=sys.stderr)
@@ -55,9 +70,11 @@ def cmd_update(args: argparse.Namespace) -> int:
 
     _print_lines(lines)
     print()
-    print(f"Skills updated in {app}")
+    print(f"Skills updated to WholeLoop v{PIPELINE_VERSION} in {app}")
+    if args.no_refresh_docs:
+        print("  Docs unchanged (--no-refresh-docs). Consider refreshing WHOLELOOP.md manually.")
     print("  If conventions changed: wholeloop conventions bootstrap")
-    print("  Then: project-conventions agent in IDE → approve")
+    print("  Then: wholeloop doctor")
     return 0
 
 
@@ -66,6 +83,29 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     ok, lines = run_doctor(app)
     print("\n".join(lines))
     return 0 if ok else 1
+
+
+def cmd_skills(_: argparse.Namespace) -> int:
+    root = skills_src()
+    installed = list_installed_skills(root)
+    print(f"wholeloop {__version__} — bundled skills ({len(installed)})")
+    print(f"Pipeline v{PIPELINE_VERSION}: {PIPELINE_LINE}")
+    print()
+    print("Required:")
+    for name in REQUIRED_SKILL_DIRS:
+        mark = "✓" if name in installed else "✗"
+        print(f"  {mark} {name}")
+    print()
+    print("Optional:")
+    for name in OPTIONAL_SKILL_DIRS:
+        mark = "✓" if name in installed else "·"
+        print(f"  {mark} {name}")
+    print()
+    print("Removed in v0.2 (should not appear after update):")
+    for name in REMOVED_SKILL_DIRS:
+        mark = "✗ STALE" if name in installed else "—"
+        print(f"  {mark} {name}")
+    return 0
 
 
 def cmd_conventions_bootstrap(args: argparse.Namespace) -> int:
@@ -109,19 +149,19 @@ def cmd_conventions_import(args: argparse.Namespace) -> int:
 
 
 def cmd_version(_: argparse.Namespace) -> int:
-    print(f"wholeloop {__version__}")
+    print(f"wholeloop {__version__} (pipeline v{PIPELINE_VERSION})")
     return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="wholeloop",
-        description="Install WholeLoop agent skills into your app repository.",
+        description="Install WholeLoop v0.2 agent skills into your app repository.",
     )
     parser.add_argument(
         "--version",
         action="version",
-        version=f"%(prog)s {__version__}",
+        version=f"%(prog)s {__version__} (pipeline v{PIPELINE_VERSION})",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -154,7 +194,10 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_init.set_defaults(func=cmd_init)
 
-    p_up = sub.add_parser("update", help="Refresh skills from the installed CLI bundle")
+    p_up = sub.add_parser(
+        "update",
+        help="Refresh skills and IDE docs (WHOLELOOP.md, rules) from the CLI bundle",
+    )
     p_up.add_argument("path", nargs="?", default=".", help="Path to app repository")
     p_up.add_argument(
         "--no-keep-conventions",
@@ -168,11 +211,22 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Copy IDE skill dirs instead of symlinks",
     )
+    p_up.add_argument(
+        "--no-refresh-docs",
+        action="store_true",
+        help="Do not overwrite WHOLELOOP.md, CLAUDE.md, Copilot instructions, Cursor rules",
+    )
     p_up.set_defaults(func=cmd_update)
 
-    p_doc = sub.add_parser("doctor", help="Check WholeLoop installation")
+    p_doc = sub.add_parser("doctor", help="Check WholeLoop installation (v0.2 skills + docs)")
     p_doc.add_argument("path", nargs="?", default=".", help="Path to app repository")
     p_doc.set_defaults(func=cmd_doctor)
+
+    p_sk = sub.add_parser(
+        "skills",
+        help="List skills bundled in this CLI install and the v0.2 pipeline",
+    )
+    p_sk.set_defaults(func=cmd_skills)
 
     p_conv = sub.add_parser(
         "conventions",
