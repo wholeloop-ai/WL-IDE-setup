@@ -2,6 +2,7 @@
 
 ## 0.2.0
 
+- **project-conventions** skill v1.1: migrate existing `project-conventions.md` from v0.1 → v0.2 when dev requests (preserve confirmed content).
 - **CLI:** `wholeloop update` refreshes WHOLELOOP.md and IDE instruction files by default; `--no-refresh-docs` to skip.
 - **CLI:** `wholeloop skills` lists bundled agents; `wholeloop doctor` validates v0.2 skills and warns on legacy installs.
 - **CLI:** `python -m wholeloop` supported via `wholeloop/__main__.py`.

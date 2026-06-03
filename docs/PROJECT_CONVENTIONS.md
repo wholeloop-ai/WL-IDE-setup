@@ -71,6 +71,18 @@ After approval, the bootstrap marker is removed.
 
 **Incomplete conventions → agents guess → rework.**
 
+## Migrating conventions after CLI v0.2
+
+If the file was written for v0.1 (`spec-validator`, `tracker-intake`, `analyser`, cohort intake), run the agent — do not only edit by hand:
+
+> Run **project-conventions**: migrate this repo's `project-conventions.md` from v0.1 to v0.2. Keep confirmed stack and layout. Update Issue tracker, §6 run paths, and agent tables. Wait for my **approve**.
+
+The skill preserves team-confirmed content and patches pipeline wording. Then:
+
+```bash
+wholeloop doctor
+```
+
 ## Maintaining over time
 
 Re-run **project-conventions** agent when:
@@ -78,6 +90,7 @@ Re-run **project-conventions** agent when:
 - New top-level package or service folder
 - Stack change (e.g. added Playwright, changed package manager)
 - Tracker or product repo path changes
+- **`wholeloop update`** upgraded the CLI and doctor warns about v0.1 agent names in conventions
 
 Optionally refresh CLI hints:
 
