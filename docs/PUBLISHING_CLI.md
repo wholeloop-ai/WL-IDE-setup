@@ -47,19 +47,23 @@ pipx install hatch
 
 The wheel must include `agents/skills` and `references/` (via hatch `force-include`).
 
+**Run every build from the repo root** (the directory that contains `pyproject.toml`).
+If you run `hatch build` from `~` or another folder, Hatch fails with `ValueError: Empty module name`.
+
 ```bash
-cd WL-IDE-setup
-hatch build
-unzip -l dist/wholeloop_cli-0.1.0-py3-none-any.whl | grep SKILL.md
+cd /path/to/wholeloop-IDE-setup   # or WL-IDE-setup
+uvx hatch build
+unzip -l dist/wholeloop_cli-0.2.0-py3-none-any.whl | grep SKILL.md
 ```
 
-You should see paths under `wholeloop/_bundle/agents/skills/`.
+You should see paths under `wholeloop/_bundle/agents/skills/` (including `spec-review/SKILL.md`).
 
 Smoke test locally:
 
 ```bash
-pipx install dist/wholeloop_cli-0.1.0-py3-none-any.whl
+uv tool install dist/wholeloop_cli-0.2.0-py3-none-any.whl --force
 wholeloop version
+wholeloop skills
 mkdir /tmp/wl-test && wholeloop init /tmp/wl-test
 wholeloop doctor /tmp/wl-test
 ```
@@ -69,10 +73,17 @@ wholeloop doctor /tmp/wl-test
 ## Publish to public PyPI
 
 ```bash
-cd WL-IDE-setup
-hatch build
-hatch publish
+cd /path/to/wholeloop-IDE-setup
+uvx hatch build
+uvx hatch publish
 ```
+
+## Troubleshooting `hatch build`
+
+| Symptom | Cause | Fix |
+|---------|--------|-----|
+| `ValueError: Empty module name` | Not in the package repo (e.g. ran from `~`) | `cd` to the repo that contains `pyproject.toml`, then `uvx hatch build` |
+| Wheel missing `spec-review` | Old dist artifacts or build from wrong branch | `rm -rf dist/` and rebuild from a clean checkout |
 
 `hatch publish` prompts for username `__token__` and password = your PyPI API token.
 
