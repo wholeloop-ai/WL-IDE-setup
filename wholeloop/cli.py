@@ -1,4 +1,14 @@
-"""WholeLoop command-line interface."""
+"""WholeLoop command-line interface.
+
+Command shape is noun-verb (product / app), with init, init-product and update
+kept as backward-compatible aliases.
+
+  wholeloop setup                 guided: product repo + app repo(s)
+  wholeloop product init|update   PM — system of record
+  wholeloop app init|update       Dev — delivery pipeline (+ product link)
+  wholeloop link <product>        connect an existing app to its product repo
+  wholeloop doctor                verify an app repo (incl. product link)
+"""
 
 from __future__ import annotations
 
@@ -8,9 +18,14 @@ from pathlib import Path
 
 from wholeloop import __version__
 from wholeloop.assets import skills_src
+from wholeloop.conventions import (
+    bootstrap_conventions,
+    import_conventions,
+    product_link_status,
+)
 from wholeloop.doctor import run_doctor
-from wholeloop.install import install_app, update_skills
-from wholeloop.conventions import bootstrap_conventions, import_conventions
+from wholeloop.install import update_skills
+from wholeloop.link import link_app_to_product
 from wholeloop.pipeline import (
     OPTIONAL_SKILL_DIRS,
     PIPELINE_LINE,
@@ -19,6 +34,13 @@ from wholeloop.pipeline import (
     REQUIRED_SKILL_DIRS,
     list_installed_skills,
 )
+from wholeloop.setup import (
+    run_app_init,
+    run_product_init,
+    run_product_update,
+    run_setup,
+)
+from wholeloop.version_check import print_upgrade_notice
 
 
 def _print_lines(lines: list[str]) -> None:
@@ -26,36 +48,22 @@ def _print_lines(lines: list[str]) -> None:
         print(line)
 
 
-def _next_steps_v02() -> None:
-    print("  Next steps:")
-    print("    1. Run project-conventions agent in IDE (confirm CLI bootstrap)")
-    print("    2. Read WHOLELOOP.md — pipeline v0.2")
-    print("    3. wholeloop doctor")
-    print("    4. Start a run: spec-review (ARTIFACT-WAL and/or epic ref)")
+# --------------------------------------------------------------------------- #
+# command handlers
+# --------------------------------------------------------------------------- #
+
+def cmd_app_init(args: argparse.Namespace) -> int:
+    return run_app_init(
+        path=args.path,
+        product=args.product,
+        force=args.force,
+        copy_ide_skills=args.copy_ide_skills,
+        conventions_from=args.conventions_from,
+        interactive=not args.yes,
+    )
 
 
-def cmd_init(args: argparse.Namespace) -> int:
-    app = Path(args.path or ".").resolve()
-    try:
-        lines = install_app(
-            app,
-            force=args.force,
-            copy_ide_skills=args.copy_ide_skills,
-            conventions_from=getattr(args, "conventions_from", None),
-        )
-    except (FileExistsError, FileNotFoundError, ValueError) as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 1
-
-    _print_lines(lines)
-    print()
-    print(f"WholeLoop {__version__} installed (Cursor, Claude Code, VS Code).")
-    print(f"  App:         {app}")
-    _next_steps_v02()
-    return 0
-
-
-def cmd_update(args: argparse.Namespace) -> int:
+def cmd_app_update(args: argparse.Namespace) -> int:
     app = Path(args.path or ".").resolve()
     try:
         lines = update_skills(
@@ -72,9 +80,54 @@ def cmd_update(args: argparse.Namespace) -> int:
     print()
     print(f"Skills updated to WholeLoop v{PIPELINE_VERSION} in {app}")
     if args.no_refresh_docs:
-        print("  Docs unchanged (--no-refresh-docs). Consider refreshing WHOLELOOP.md manually.")
-    print("  If conventions changed: wholeloop conventions bootstrap")
+        print("  Docs unchanged (--no-refresh-docs). Refresh WHOLELOOP.md manually if needed.")
+    linked, val = product_link_status(app)
+    if linked:
+        print(f"  Product link: {val}")
+    else:
+        print("  Product link: not set — run: wholeloop link <product-path-or-url>")
     print("  Then: wholeloop doctor")
+    print_upgrade_notice(app, allow_network=True)
+    return 0
+
+
+def cmd_product_init(args: argparse.Namespace) -> int:
+    return run_product_init(
+        path=args.path,
+        name=args.name,
+        force=args.force,
+        do_git=args.git,
+        interactive=not args.yes,
+    )
+
+
+def cmd_product_update(args: argparse.Namespace) -> int:
+    return run_product_update(path=args.path, interactive=not args.yes)
+
+
+def cmd_setup(args: argparse.Namespace) -> int:
+    return run_setup(
+        product=args.product,
+        new_product=args.new_product,
+        name=args.name,
+        apps=args.app,
+        interactive=not args.yes,
+    )
+
+
+def cmd_link(args: argparse.Namespace) -> int:
+    app = Path(args.app or ".").resolve()
+    try:
+        lines = link_app_to_product(app, args.product)
+    except FileNotFoundError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    _print_lines(lines)
+    print()
+    linked, val = product_link_status(app)
+    if linked:
+        print(f"Linked {app}\n  → product repo: {val}")
+    print("  Verify: wholeloop doctor")
     return 0
 
 
@@ -82,6 +135,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     app = Path(args.path or ".").resolve()
     ok, lines = run_doctor(app)
     print("\n".join(lines))
+    print_upgrade_notice(app, allow_network=True)
     return 0 if ok else 1
 
 
@@ -150,129 +204,170 @@ def cmd_conventions_import(args: argparse.Namespace) -> int:
 
 def cmd_version(_: argparse.Namespace) -> int:
     print(f"wholeloop {__version__} (pipeline v{PIPELINE_VERSION})")
+    print_upgrade_notice(Path.cwd(), allow_network=True)
     return 0
+
+
+def print_welcome() -> None:
+    print(f"wholeloop {__version__} — agentic delivery around a product repo")
+    print()
+    print("First time? One guided flow for everything:")
+    print("  wholeloop setup              product repo + app repo(s)")
+    print()
+    print("By role:")
+    print("  wholeloop product init       PM  — scaffold the product repo (truth)")
+    print("  wholeloop app init           Dev — install delivery + link to product")
+    print("  wholeloop link <product>     Dev — connect an existing app to product")
+    print()
+    print("Maintain:")
+    print("  wholeloop app update         refresh delivery skills + IDE docs")
+    print("  wholeloop product update     refresh PM skills (keeps your content)")
+    print("  wholeloop doctor             verify an app repo (incl. product link)")
+    print()
+    print("  wholeloop <command> --help   ·   wholeloop skills   ·   wholeloop version")
+    print_upgrade_notice(Path.cwd(), allow_network=False)
+
+
+# --------------------------------------------------------------------------- #
+# argument wiring
+# --------------------------------------------------------------------------- #
+
+def _add_app_init_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("path", nargs="?", default=None, help="App repo path (default: cwd)")
+    p.add_argument(
+        "--product",
+        metavar="REF",
+        help="Product repo path or git URL to link (closes the loop)",
+    )
+    p.add_argument("--force", "-f", action="store_true", help="Overwrite existing install")
+    p.add_argument(
+        "--copy-ide-skills",
+        action="store_true",
+        help="Copy into .cursor/.claude instead of symlinks (Windows)",
+    )
+    p.add_argument(
+        "--conventions-from",
+        metavar="FILE",
+        help="Team project-conventions.md instead of CLI bootstrap",
+    )
+    p.add_argument("--yes", "-y", action="store_true", help="No prompts; use defaults")
+    p.set_defaults(func=cmd_app_init)
+
+
+def _add_app_update_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("path", nargs="?", default=".", help="App repo path")
+    p.add_argument(
+        "--no-keep-conventions",
+        action="store_false",
+        dest="keep_conventions",
+        help="Reset project-conventions.md from template",
+    )
+    p.add_argument(
+        "--copy-ide-skills",
+        action="store_true",
+        help="Copy IDE skill dirs instead of symlinks",
+    )
+    p.add_argument(
+        "--no-refresh-docs",
+        action="store_true",
+        help="Skills only; leave WHOLELOOP.md and IDE instructions",
+    )
+    p.set_defaults(keep_conventions=True, func=cmd_app_update)
+
+
+def _add_product_init_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("path", nargs="?", default=None, help="Target dir for the product repo")
+    p.add_argument("--name", metavar="NAME", help="Product name (README + path hint)")
+    p.add_argument("--force", "-f", action="store_true", help="Replace non-empty dir (destructive)")
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--git", dest="git", action="store_true", default=None, help="git init + first commit")
+    g.add_argument("--no-git", dest="git", action="store_false", help="Do not init git")
+    p.add_argument("--yes", "-y", action="store_true", help="No prompts; use defaults")
+    p.set_defaults(func=cmd_product_init)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="wholeloop",
-        description="Install WholeLoop v0.2 agent skills into your app repository.",
+        description="WholeLoop — product repo (truth) + app repos (delivery). v0.3.",
     )
     parser.add_argument(
         "--version",
         action="version",
         version=f"%(prog)s {__version__} (pipeline v{PIPELINE_VERSION})",
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command")
 
-    p_init = sub.add_parser(
-        "init",
-        help="Install skills, WHOLELOOP.md, IDE symlinks (default: current directory)",
-    )
-    p_init.add_argument(
-        "path",
-        nargs="?",
-        default=".",
-        help="Path to app repository (default: .)",
-    )
-    p_init.add_argument(
-        "--force",
-        "-f",
-        action="store_true",
-        help="Overwrite existing .agents/skills and templated files",
-    )
-    p_init.add_argument(
-        "--copy-ide-skills",
-        action="store_true",
-        help="Copy into .cursor/.claude instead of symlinks (Windows without symlink support)",
-    )
-    p_init.add_argument(
-        "--conventions-from",
-        metavar="FILE",
-        type=Path,
-        help="Use a team WholeLoop project-conventions.md instead of CLI README bootstrap",
-    )
-    p_init.set_defaults(func=cmd_init)
+    # setup (founder one-shot)
+    p_setup = sub.add_parser("setup", help="Guided setup: product repo + app repo(s)")
+    p_setup.add_argument("--product", metavar="PATH", help="Use an existing product repo")
+    p_setup.add_argument("--new-product", metavar="PATH", help="Create a new product repo here")
+    p_setup.add_argument("--name", metavar="NAME", help="Product name (with --new-product)")
+    p_setup.add_argument("--app", metavar="PATH", action="append", help="App repo to install (repeatable)")
+    p_setup.add_argument("--yes", "-y", action="store_true", help="No prompts; use flags")
+    p_setup.set_defaults(func=cmd_setup)
 
-    p_up = sub.add_parser(
-        "update",
-        help="Refresh skills and IDE docs (WHOLELOOP.md, rules) from the CLI bundle",
+    # product <init|update>
+    p_product = sub.add_parser("product", help="Product repo (PM — system of record)")
+    prod_sub = p_product.add_subparsers(dest="product_cmd", required=True)
+    _add_product_init_args(
+        prod_sub.add_parser("init", help="Scaffold a new product repo")
     )
-    p_up.add_argument("path", nargs="?", default=".", help="Path to app repository")
-    p_up.add_argument(
-        "--no-keep-conventions",
-        action="store_false",
-        dest="keep_conventions",
-        help="Reset project-conventions.md from template",
-    )
-    p_up.set_defaults(keep_conventions=True)
-    p_up.add_argument(
-        "--copy-ide-skills",
-        action="store_true",
-        help="Copy IDE skill dirs instead of symlinks",
-    )
-    p_up.add_argument(
-        "--no-refresh-docs",
-        action="store_true",
-        help="Do not overwrite WHOLELOOP.md, CLAUDE.md, Copilot instructions, Cursor rules",
-    )
-    p_up.set_defaults(func=cmd_update)
+    p_pu = prod_sub.add_parser("update", help="Refresh PM skills (keeps your content)")
+    p_pu.add_argument("path", nargs="?", default=".", help="Product repo path")
+    p_pu.add_argument("--yes", "-y", action="store_true")
+    p_pu.set_defaults(func=cmd_product_update)
 
-    p_doc = sub.add_parser("doctor", help="Check WholeLoop installation (v0.2 skills + docs)")
-    p_doc.add_argument("path", nargs="?", default=".", help="Path to app repository")
+    # app <init|update|doctor>
+    p_app = sub.add_parser("app", help="App repo (Dev — delivery pipeline)")
+    app_sub = p_app.add_subparsers(dest="app_cmd", required=True)
+    _add_app_init_args(app_sub.add_parser("init", help="Install skills + link to product"))
+    _add_app_update_args(app_sub.add_parser("update", help="Refresh skills and IDE docs"))
+    p_ad = app_sub.add_parser("doctor", help="Check this app repo")
+    p_ad.add_argument("path", nargs="?", default=".", help="App repo path")
+    p_ad.set_defaults(func=cmd_doctor)
+
+    # link
+    p_link = sub.add_parser("link", help="Connect an app repo to its product repo")
+    p_link.add_argument("product", help="Product repo path or git URL")
+    p_link.add_argument("app", nargs="?", default=".", help="App repo (default: cwd)")
+    p_link.set_defaults(func=cmd_link)
+
+    # doctor (top-level alias of app doctor)
+    p_doc = sub.add_parser("doctor", help="Check WholeLoop installation in an app repo")
+    p_doc.add_argument("path", nargs="?", default=".", help="App repo path")
     p_doc.set_defaults(func=cmd_doctor)
 
-    p_sk = sub.add_parser(
-        "skills",
-        help="List skills bundled in this CLI install and the v0.2 pipeline",
+    # skills
+    sub.add_parser("skills", help="List bundled skills and the v0.2 pipeline").set_defaults(
+        func=cmd_skills
     )
-    p_sk.set_defaults(func=cmd_skills)
 
-    p_conv = sub.add_parser(
-        "conventions",
-        help="Project conventions helpers (CLI bootstrap, no AI)",
-    )
+    # conventions
+    p_conv = sub.add_parser("conventions", help="Project conventions helpers (no AI)")
     conv_sub = p_conv.add_subparsers(dest="conventions_cmd", required=True)
-    p_cb = conv_sub.add_parser(
-        "bootstrap",
-        help="Re-extract basics from README/package files into project-conventions.md",
-    )
-    p_cb.add_argument("path", nargs="?", default=".", help="Path to app repository")
+    p_cb = conv_sub.add_parser("bootstrap", help="Re-extract basics into project-conventions.md")
+    p_cb.add_argument("path", nargs="?", default=".", help="App repo path")
+    p_cb.add_argument("--force", "-f", action="store_true", help="Overwrite with fresh bootstrap")
     p_cb.add_argument(
-        "--force",
-        "-f",
-        action="store_true",
-        help="Overwrite conventions file with fresh CLI bootstrap",
+        "--from", dest="from_file", metavar="FILE", type=Path,
+        help="Import a team project-conventions.md",
     )
-    p_cb.add_argument(
-        "--from",
-        dest="from_file",
-        metavar="FILE",
-        type=Path,
-        help="Import a team WholeLoop project-conventions.md (validates template sections)",
-    )
-    p_cb.add_argument(
-        "--no-prompt",
-        action="store_true",
-        help="Do not ask interactively for a team conventions file",
-    )
+    p_cb.add_argument("--no-prompt", action="store_true", help="Do not ask for a team file")
     p_cb.set_defaults(func=cmd_conventions_bootstrap)
-
-    p_ci = conv_sub.add_parser(
-        "import",
-        help="Install a team project-conventions.md (same validation as bootstrap --from)",
-    )
+    p_ci = conv_sub.add_parser("import", help="Install a team project-conventions.md")
     p_ci.add_argument("source", type=Path, help="Path to the conventions file")
-    p_ci.add_argument("path", nargs="?", default=".", help="Path to app repository")
-    p_ci.add_argument(
-        "--force",
-        "-f",
-        action="store_true",
-        help="Replace existing project-conventions.md",
-    )
+    p_ci.add_argument("path", nargs="?", default=".", help="App repo path")
+    p_ci.add_argument("--force", "-f", action="store_true", help="Replace existing file")
     p_ci.set_defaults(func=cmd_conventions_import)
 
+    # version
     sub.add_parser("version", help="Print version").set_defaults(func=cmd_version)
+
+    # backward-compatible aliases
+    _add_app_init_args(sub.add_parser("init", help="Alias of: app init"))
+    _add_app_update_args(sub.add_parser("update", help="Alias of: app update"))
+    _add_product_init_args(sub.add_parser("init-product", help="Alias of: product init"))
 
     return parser
 
@@ -280,6 +375,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+    if getattr(args, "func", None) is None:
+        print_welcome()
+        return 0
     return args.func(args)
 
 

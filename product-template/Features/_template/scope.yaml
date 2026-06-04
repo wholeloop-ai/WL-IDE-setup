@@ -1,0 +1,40 @@
+schema_version: "1.0"
+id: example-feature
+title: Example feature
+created: YYYY-MM-DD
+created_by: "PM"
+status: candidate
+
+evidence:
+  signal_count: 0
+  icp_weighted_count: 0
+  confidence: low
+  confidence_reason: ""
+  primary_icp_validated: false
+  supporting_interviews: []
+  supporting_surveys: []
+
+jtbd:
+  primary: >
+    When <situation>, I want <motivation>, so I can <outcome>.
+  secondary: []
+
+icp:
+  primary_segment: ICP1_primary
+  secondary_segments: []
+  excluded_segments: []
+  icp_match_required: ICP1_primary
+
+in_scope:
+  - <first deliverable>
+
+out_of_scope:
+  - <explicit deferral>
+
+validation_gates:
+  - id: gate-1
+    question: "<question for PM>"
+    status: open
+    answer: null
+
+delivery_notes: null

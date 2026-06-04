@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from wholeloop import __version__
-from wholeloop.conventions import is_bootstrap_pending
+from wholeloop.conventions import is_bootstrap_pending, product_link_status
 from wholeloop.pipeline import (
     PIPELINE_LINE,
     PIPELINE_VERSION,
@@ -90,6 +90,24 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
             )
     else:
         check(False, "", "missing references/project-conventions.md")
+
+    linked, value = product_link_status(app)
+    if linked:
+        ref = value or ""
+        resolvable = ref.startswith(("http://", "https://", "git@", "ssh://")) or (
+            app / ref
+        ).resolve().exists()
+        if resolvable:
+            lines.append(f"  ✓ product repo linked ({ref})")
+        else:
+            lines.append(
+                f"  ⚠ product repo linked but path not found: {ref} — re-run: wholeloop link"
+            )
+    else:
+        lines.append(
+            "  ⚠ product repo not linked — run: wholeloop link <product-path-or-url> "
+            "(needed for spec inbox + handoff)"
+        )
 
     for parent in (".cursor", ".claude"):
         link = app / parent / "skills"

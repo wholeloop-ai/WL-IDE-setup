@@ -229,6 +229,14 @@ def update_skills(
     if refresh_docs:
         lines.extend(sync_reference_files(app, force=True))
 
+    # Self-heal scaffolding that older installs (or update-only repos) may lack.
+    runs = app / "workspace" / "runs"
+    if not runs.is_dir():
+        runs.mkdir(parents=True, exist_ok=True)
+        (runs / ".gitkeep").touch(exist_ok=True)
+        lines.append("write workspace/runs/")
+    lines.append(_ensure_gitignore(app))
+
     ensure_conventions_layout(app)
     if backup is not None:
         conventions.write_text(backup, encoding="utf-8")

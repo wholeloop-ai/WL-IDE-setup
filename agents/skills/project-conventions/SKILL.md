@@ -65,7 +65,7 @@ Propose concrete text for empty or TODO sections:
 Ask targeted questions. Examples:
 
 - “Is `tracker.provider` **linear**, **jira**, or **manual**?”
-- “Product specs / ARTIFACT-WAL path (e.g. `../walliu-product/`, `inbox/`)?”
+- “Product specs / ARTIFACT-WAL path (e.g. `../product-repo/`, `inbox/`)?”
 - “Are agents allowed to edit `infra/`?”
 - “Test command for CI/local: …?”
 - “Release strategy default: one PR per story or one per epic?”

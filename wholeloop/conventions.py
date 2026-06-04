@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import sys
@@ -417,3 +418,98 @@ def is_bootstrap_pending(path: Path) -> bool:
         return True
     text = path.read_text(encoding="utf-8")
     return BOOTSTRAP_MARKER in text or "{{PROJECT_NAME}}" in text or AGENT_TODO in text
+
+
+PRODUCT_LINK_MARKER = "<!-- wholeloop:product-link -->"
+
+
+def _is_product_url(ref: str) -> bool:
+    return ref.startswith(("http://", "https://", "git@", "ssh://"))
+
+
+def normalize_product_ref(app: Path, product_ref: str) -> tuple[str, str, str]:
+    """Return (config_value, display, spec_inbox) for a product reference.
+
+    config_value: absolute path or URL stored in global config.
+    display: what we write into conventions (relative path when local + sibling).
+    spec_inbox: where spec-review looks for ARTIFACT-WAL copies.
+    """
+    if _is_product_url(product_ref):
+        return product_ref, product_ref, f"{product_ref} (clone, then re-run wholeloop link <local-path>)"
+
+    resolved = Path(product_ref).expanduser().resolve()
+    try:
+        rel = os.path.relpath(resolved, app.resolve())
+        display = rel if not rel.startswith(os.pardir + os.pardir) else str(resolved)
+    except ValueError:
+        display = str(resolved)
+    return str(resolved), display, f"{display}/inbox/"
+
+
+def set_product_link(app: Path, product_ref: str) -> tuple[Path, list[str]]:
+    """Write the product repo reference into project-conventions.md (§2, §5, §8)."""
+    app = app.resolve()
+    dest = _conventions_dest(app)
+    if not dest.is_file():
+        raise FileNotFoundError(
+            f"{dest} not found — run: wholeloop init (or wholeloop app init)"
+        )
+
+    _, display, spec_inbox = normalize_product_ref(app, product_ref)
+    text = dest.read_text(encoding="utf-8")
+    changed: list[str] = []
+
+    # §2 — Product repo line
+    line2 = (
+        f"- **Product repo (specs):** `{display}` — spec inbox: `{spec_inbox}` "
+        f"{PRODUCT_LINK_MARKER}"
+    )
+    new_text, n = re.subn(r"- \*\*Product repo.*", line2, text, count=1)
+    if n:
+        text = new_text
+        changed.append("conventions §2 — product repo path")
+    else:
+        text = re.sub(
+            r"(## 2\. Repository layout\n)",
+            r"\1\n" + line2 + "\n",
+            text,
+            count=1,
+        )
+        changed.append("conventions §2 — product repo path (inserted)")
+
+    # §5 — Default spec path row
+    new_text, n = re.subn(
+        r"(\| \*\*Default spec path\*\* \| )`[^`]*`( \|)",
+        rf"\1`{spec_inbox}{{spec_id}}.md`\2",
+        text,
+        count=1,
+    )
+    if n:
+        text = new_text
+        changed.append("conventions §5 — default spec path")
+
+    # §8 — Links
+    new_text, n = re.subn(
+        r"- Product repo URL\.?",
+        f"- Product repo: {product_ref}",
+        text,
+        count=1,
+    )
+    if n:
+        text = new_text
+        changed.append("conventions §8 — product repo link")
+
+    dest.write_text(text, encoding="utf-8")
+    return dest, changed
+
+
+def product_link_status(app: Path) -> tuple[bool, str | None]:
+    """(linked, display_value) — linked is True once a real path/URL replaced the TODO."""
+    dest = _conventions_dest(app)
+    if not dest.is_file():
+        return False, None
+    text = dest.read_text(encoding="utf-8")
+    m = re.search(r"- \*\*Product repo \(specs\):\*\* `([^`]+)`", text)
+    if m and PRODUCT_LINK_MARKER in text:
+        return True, m.group(1)
+    return False, None

@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.3.3
+
+- **`app update` self-heals scaffolding:** it now recreates `workspace/runs/` and ensures `.gitignore` lists `workspace/` (previously only `init` did this, so updated-from-old repos failed `doctor`).
+
+## 0.3.2
+
+- **Wizard prompts are now menus, not free text.** Product location ("here / home / another") and app repo ("this folder / another path") are pick-a-number choices, so you can't accidentally type a value like `existing` or `yes` as a path. Custom paths are confirmed (absolute path shown) before anything is created.
+- **Existing install handled mid-wizard:** if the chosen app folder already has WholeLoop, `setup` offers update / reinstall / skip instead of erroring and aborting.
+
+## 0.3.1
+
+- **Wizard UX:** `product init` / `setup` default to creating `<name>-product/` **in the current directory** (like `git init`), with options for `~/<name>-product` or another location.
+- Pointing at an **existing folder** nests `<name>-product/` inside it instead of erroring on a non-empty directory; a new or empty path is used directly as the repo. Clearer prompt wording.
+
+## 0.3.0
+
+- **CLI UX (noun-verb):** `wholeloop product init|update` and `wholeloop app init|update`. `init`, `init-product`, and `update` remain as aliases.
+- **Guided wizards:** `wholeloop setup` walks founders through product repo + app repo(s) in one interaction; `product init` and `app init` prompt when run in a terminal (TTY). `--yes` / `WHOLELOOP_NO_PROMPT=1` skip all prompts for CI.
+- **Product link (closes the loop):** `wholeloop app init --product <path|url>` and `wholeloop link <product> [app]` write the product repo into `project-conventions.md` (§2, §5, §8) so spec-review finds the inbox and handoff knows where to append `delivery_notes`.
+- **`wholeloop product update`:** refreshes only the PM skills (`.cursor/skills/`, `Agents/`) — never touches `Features/`, `Interviews/`, `Progress/`, `inbox/`, `Context/`.
+- **`wholeloop doctor`:** new check for the product-repo link (warns when missing or unresolvable).
+- **Config:** per-machine `~/.wholeloop/config.json` records the product repo and app repos for smart defaults (override dir with `WHOLELOOP_CONFIG_DIR`). Local only; no secrets.
+- **Upgrade notices:** status commands check PyPI at most once a day and, if a newer release exists, print the CLI upgrade command plus the right per-repo update (`app update` vs `product update`). Best-effort, skipped for non-interactive output, opt out with `WHOLELOOP_NO_UPDATE_CHECK=1`.
+- Running `wholeloop` with no command prints a role-oriented welcome.
+
+## 0.2.2
+
+- **CLI:** `wholeloop init-product <path>` scaffolds a sanitized product discovery repo (PM skills, folder layout).
+- Bundle includes `product-template/` (generic placeholders, no customer-specific repo names).
+
 ## 0.2.1
 
 - **project-conventions** skill v1.1: migrate existing conventions from v0.1 → v0.2 on developer request.

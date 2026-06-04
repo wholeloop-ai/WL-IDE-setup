@@ -1,0 +1,16 @@
+schema_version: "1.2"
+
+counts:
+  interviews_total: 0
+  interviews_icp1: 0
+  interviews_icp2: 0
+  interviews_anti_icp: 0
+  themes_total: 0
+  surveys_processed: 0
+  survey_respondents_total: 0
+  feature_candidates_total: 0
+
+survey_themes: []
+interviews: []
+themes: []
+feature_candidates: []

@@ -1,8 +1,12 @@
 # WholeLoop architecture
 
-## Pipeline (v0.2)
+## System shape
+
+WholeLoop is **product-centered**: the product repository is the long-lived system of record (scope, ARTIFACT-WAL, interviews, inbox, `delivery_notes`, progress). App repositories hold code and **ephemeral** `workspace/runs/` for each delivery. The v0.2 pipeline runs in the app; **handoff** writes back to the product repo so truth stays in one place.
 
 See **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)** and **[TRACKERS.md](TRACKERS.md)**.
+
+## Pipeline (v0.2, app repo)
 
 ```text
 spec-review → [ui-ux-designer B] → planner → builder|manual
@@ -42,7 +46,12 @@ Declared in skill frontmatter (`human_gate: true`) and in **WHOLELOOP.md**.
 2. Update **planner** if the agent belongs in the default route.
 3. Run `wholeloop update` in app repos after publishing template changes.
 
+## Product repo (this template’s `product-template/`)
+
+- Scaffold: `wholeloop init-product` — PM skills in `.cursor/skills/`, folder layout for `Features/`, `Interviews/`, `Context/`, etc.
+- Not bundled into `wholeloop init` / `wholeloop update` (those target app repos only).
+- Future: `wholeloop update-product` to refresh PM skills without touching `Features/` or `Progress/`.
+
 ## Out of scope (this repo)
 
 - Python orchestrator, inbox watchers, n8n flows — not part of the supported developer experience.
-- Product-repo agents (`build-spec`, `brainstorm-feature`, …) live in the product template, not this bundle.

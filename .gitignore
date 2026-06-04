@@ -2,6 +2,7 @@
 *.pyc
 .venv/
 _cli_test_app/
+.wl-cli-test/
 dist/
 *.egg-info/
 __pycache__/

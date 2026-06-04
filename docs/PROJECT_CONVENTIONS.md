@@ -17,7 +17,7 @@ A senior dev can share an already-approved `project-conventions.md`. The new dev
 
 ```bash
 # During init
-wholeloop init --conventions-from ~/Downloads/walliu-project-conventions.md
+wholeloop init --conventions-from ~/Downloads/team-project-conventions.md
 
 # After init
 wholeloop conventions import ./project-conventions.md

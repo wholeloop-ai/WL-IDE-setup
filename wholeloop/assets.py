@@ -25,3 +25,13 @@ def skills_src() -> Path:
 
 def references_dir() -> Path:
     return assets_root() / "references"
+
+
+def product_template_src() -> Path:
+    root = assets_root() / "product-template"
+    if not root.is_dir():
+        raise FileNotFoundError(
+            "Product template not found in CLI bundle. Reinstall: "
+            "uv tool install wholeloop-cli --upgrade --force"
+        )
+    return root

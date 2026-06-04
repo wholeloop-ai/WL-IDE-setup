@@ -1,6 +1,6 @@
 # Workflow: product spec + user stories
 
-Specs in a **product** repo; stories in **Linear**, **Jira**, or **manual paste**; implementation in an **app** repo with Cursor, Claude Code, or VS Code. No WholeLoop server, n8n, or Python runner to deploy.
+The **product repo** is the center of WholeLoop: everything that must stay true about the product over time lives there. **App repos** implement and run the gated delivery pipeline; **handoff** writes `delivery_notes` back into product `scope.yaml`. Stories live in **Linear**, **Jira**, or **manual paste**. No WholeLoop server, n8n, or Python runner to deploy.
 
 > Tracker setup: **[TRACKERS.md](TRACKERS.md)** · IDE setup: **[IDE_SETUP.md](IDE_SETUP.md)**
 

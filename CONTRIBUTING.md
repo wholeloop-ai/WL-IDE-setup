@@ -8,9 +8,14 @@
 uv tool install . --force
 # or: pip install -e .
 wholeloop skills
-wholeloop init /tmp/test-app
+wholeloop product init /tmp/test-product --name test --no-git -y
+wholeloop app init /tmp/test-app --product /tmp/test-product -y
 wholeloop doctor /tmp/test-app
-wholeloop update /tmp/test-app
+wholeloop app update /tmp/test-app
+wholeloop product update /tmp/test-product
+wholeloop link /tmp/test-product /tmp/test-app
+# end-to-end wizards without prompts use WHOLELOOP_NO_PROMPT=1 and WHOLELOOP_CONFIG_DIR
+WHOLELOOP_PRODUCT_SOURCE=/path/to/source-repo python3 -m wholeloop.build_product_template $WHOLELOOP_PRODUCT_SOURCE product-template
 uvx hatch build   # wheel includes agents/ via hatch force-include
 ```
 

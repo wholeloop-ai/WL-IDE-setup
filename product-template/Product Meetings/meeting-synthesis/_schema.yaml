@@ -1,0 +1,67 @@
+# Product meeting synthesis — schema v1.0 ({{PRODUCT_NAME}})
+
+schema_version: "1.0"
+
+id: YYYY-MM-DD-slug
+source_file: Product Meetings/meetings/YYYY-MM-DD-slug.md
+
+meeting:
+  date: YYYY-MM-DD
+  title: ""
+  duration_minutes: null
+  participants: []
+  # Vocabulary — pick exactly ONE:
+  # discovery-review | feature-scoping | prioritization | spec-review
+  # roadmap-planning | retrospective | product-sync | workflow-alignment
+  type: product-sync
+
+quotes:
+  - id: q1
+    speaker: ""            # name or role
+    text: ""               # verbatim es-DO
+    topic: ""
+
+decisions:
+  - id: dec1
+    summary: ""
+    rationale: ""
+    quote_refs: [q1]
+    confidence: low | medium | high
+
+feature_candidates:
+  - id: fc1
+    slug: ""
+    title: ""
+    summary: ""
+    related_capabilities: []
+    quote_refs: [q1]
+    # create_brief | update_brief | defer | discard
+    roadmap_action: defer
+
+priorities:
+  - id: pri1
+    rank: 1
+    item: ""
+    quote_refs: [q1]
+
+action_items:
+  - id: act1
+    task: ""
+    owner: null            # name or null if unstated
+    due: null
+    quote_refs: [q1]
+
+open_questions:
+  - id: mq1
+    question: ""
+    quote_refs: []
+
+risks_and_assumptions:
+  - id: risk1
+    statement: ""
+    reason: ""
+
+metadata:
+  synthesized_at: YYYY-MM-DD
+  synthesized_by: synthesize-meeting
+  reviewed_by_human: false

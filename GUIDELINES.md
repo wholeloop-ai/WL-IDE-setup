@@ -17,16 +17,55 @@ Use with **README.md** when onboarding a team.
 | **ADWF** | Agentic Delivery Workflow — ordered pipeline with human gates. |
 | **Skill** | `SKILL.md`: YAML frontmatter + instructions for one agent role. |
 | **Gate** | Human approval before the next step (in IDE chat or tracker). |
-| **Workspace** | Ephemeral `workspace/runs/` — not long-lived product docs. |
+| **Workspace** | Ephemeral `workspace/runs/` in the **app** repo — execution state, not product truth. |
+| **Product repo** | Durable system of record: scope, specs, interviews, inbox, progress, delivery history. |
 
 > **History:** v0.1 used **cohort** (all stories reviewed together in spec-validator). v0.2 uses epic state + per-story plans.
 
-## 2. Repository layout (app repo)
+## 2. Two repos — product is the center
+
+WholeLoop is intentionally **two repositories**. The **product repo** holds everything that must stay aligned over time; the **app repo** runs delivery and code. You need both for the full loop — the product repo is not a side project.
+
+| Layer | Repo | Role |
+|-------|------|------|
+| **Truth** | Product | Scope, ARTIFACT-WAL, interviews, roadmap context, inbox copies, `delivery_notes` after ship |
+| **Execution** | App | Code, `wholeloop app init` skills, gitignored `workspace/runs/` per delivery |
+
+**Scaffold:**
+
+```bash
+wholeloop setup                            # guided: product + app(s), linked
+# or by role:
+wholeloop product init <path>              # product — new repo only; see safety below
+wholeloop app init <app-path> --product <product-path>   # app — delivery + link
+```
+
+The `--product` flag (or `wholeloop link <product>`) writes the product repo path into the app's `project-conventions.md` — that link is what lets the app **feed** the product repo. Install CLI: [install/README.md](install/README.md). Commands: [docs/CLI.md](docs/CLI.md).
+
+### Product repo layout (system of record)
+
+```text
+<product>/
+├── Features/<slug>/
+│   ├── scope.yaml              # intent, status, delivery_notes (handoff writes here)
+│   ├── ARTIFACT-WAL-NNN.md     # canonical spec
+│   └── mockup.html             # optional (ui-ux-designer Phase A)
+├── Interviews/                 # raw, processed, master.yaml
+├── inbox/                      # copies of specs for cross-repo handoff
+├── Progress/                   # handoffs, signals, delivery history
+├── Context/                    # ICP, roadmap, analytics snapshots
+├── .cursor/skills/             # PM agents (build-spec, brainstorm-feature, …)
+└── Agents/                     # repo-local agent docs (roadmap, synthesis)
+```
+
+`wholeloop app update` refreshes app skills/docs only. For the product repo, `wholeloop product update` refreshes **only** the PM skills (`.cursor/skills/`, `Agents/`) and never touches `Features/`, `Interviews/`, `Progress/`, `inbox/`, `Context/`. To scaffold a **new** product repo: `wholeloop product init`. On a repo that already has content, do **not** use `product init --force` — that wipes the directory; use `product update` instead.
+
+### App repo layout (delivery)
 
 ```text
 <app>/
-├── .agents/skills/          # canonical prompts (wholeloop init)
-├── workspace/runs/          # gitignored
+├── .agents/skills/          # canonical prompts (wholeloop app init)
+├── workspace/runs/          # gitignored — ephemeral per run
 ├── WHOLELOOP.md
 ├── CLAUDE.md                # Claude Code
 ├── .github/copilot-instructions.md
@@ -35,12 +74,9 @@ Use with **README.md** when onboarding a team.
 └── .cursor/rules/wholeloop.mdc
 ```
 
-**Product repo (separate):** `Features/<slug>/scope.yaml`, ARTIFACT-WAL from your spec process.
+Point `project-conventions.md` at the product repo path and inbox so **spec-review** and **handoff** can close the loop.
 
-**Install CLI (once):** [install/README.md](install/README.md) — macOS: `brew install uv` then `uv tool install wholeloop-cli`.  
-**Install into app:** `wholeloop init` — [docs/CLI.md](docs/CLI.md).
-
-### Workspace run layout
+### Workspace run layout (app only)
 
 ```text
 workspace/runs/<run-key>/
@@ -125,10 +161,12 @@ LLM API keys live in the **IDE**, not in WholeLoop templates.
 - `reviewer` — no secrets in diff.
 - Planner + CI — forbidden paths per `project-conventions.md`.
 
-## 8. Multi-repo
+## 8. Keeping product and app in sync
 
-- One **WholeLoop run** per `run-key` in the app repo (may contain multiple stories).
-- Cross-repo: **build-spec** copies ARTIFACT-WAL to inbox/; **handoff** appends `delivery_notes` to product `scope.yaml`.
+- **Discovery → spec:** PM agents in the product repo (`build-spec`, interviews, roadmap) write durable artifacts under `Features/` and `Context/`.
+- **Spec → delivery:** ARTIFACT-WAL (and/or epic in the tracker) flows into the app — typically via product `inbox/` and **spec-review**.
+- **Delivery → product:** **handoff** appends `delivery_notes` to `Features/<slug>/scope.yaml` and may write under `Progress/` — the loop closes in the product repo.
+- One **WholeLoop run** per `run-key` in the app repo (may contain multiple stories); runs are disposable, product docs are not.
 
 ## 9. Installing and updating
 
@@ -147,7 +185,13 @@ All methods: [install/README.md](install/README.md).
 **Skills (app repo):**
 
 ```bash
-wholeloop update    # refreshes .agents/skills/; keeps project-conventions.md
+wholeloop app update    # refreshes .agents/skills/ + IDE docs; keeps project-conventions.md
+```
+
+**Skills (product repo):**
+
+```bash
+wholeloop product update   # refreshes PM skills only; keeps Features/, Interviews/, …
 ```
 
 Or diff `agents/skills/` in this template vs your app copy.

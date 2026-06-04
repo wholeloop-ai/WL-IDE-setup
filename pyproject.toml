@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "wholeloop-cli"
-version = "0.2.1"
+version = "0.3.3"
 description = "Install WholeLoop agent skills into app repos (Cursor, Claude Code, VS Code)"
 readme = "README.md"
 license = "MIT"
@@ -33,6 +33,13 @@ packages = ["wholeloop"]
 [tool.hatch.build.targets.wheel.force-include]
 "agents" = "wholeloop/_bundle/agents"
 "references" = "wholeloop/_bundle/references"
+"product-template" = "wholeloop/_bundle/product-template"
 
 [tool.hatch.build.targets.sdist]
-include = ["wholeloop/", "agents/", "references/", "docs/CLI.md"]
+include = [
+  "wholeloop/",
+  "agents/",
+  "references/",
+  "product-template/",
+  "docs/CLI.md",
+]
