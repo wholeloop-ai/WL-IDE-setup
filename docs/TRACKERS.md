@@ -32,7 +32,7 @@ spec-review → ui-ux-designer (opt) → planner → dev agents → reviewer →
 
 | Provider | Typical link |
 |----------|----------------|
-| **linear** | Label `spec:ARTIFACT-WAL-042`, or epic parent |
+| **linear** | Label `spec:ARTIFACT-<PREFIX>-042`, or epic parent |
 | **jira** | Epic link, label, or JQL in conventions |
 | **manual** | Paste epic description and existing stories when running spec-review |
 
@@ -42,7 +42,7 @@ Spec frontmatter (`references/SPEC.template.md`) includes tracker-agnostic field
 
 1. Enable Linear MCP in the IDE ([IDE_SETUP.md](IDE_SETUP.md)).
 2. `tracker.provider: linear`
-3. “**spec-review** for ARTIFACT-WAL-042 and epic PROJ-EPIC-10”.
+3. “**spec-review** for ARTIFACT-<PREFIX>-042 and epic PROJ-EPIC-10”.
 
 ## Jira (MCP)
 
@@ -52,7 +52,7 @@ Spec frontmatter (`references/SPEC.template.md`) includes tracker-agnostic field
    - `jira_project_key` (e.g. `PROJ`)
    - Epic key or label for the spec
    - Optional **JQL template** for listing child stories
-4. “**spec-review** for ARTIFACT-WAL-042” — agent reads epic/stories via MCP.
+4. “**spec-review** for ARTIFACT-<PREFIX>-042” — agent reads epic/stories via MCP.
 
 If your Jira MCP exposes different tool names, add them to `project-conventions.md` under **MCP tool hints**.
 

@@ -6,7 +6,7 @@
 
 Preserves hand-edited: Strategy context, Open questions, Editorial notes.
 
-**Inputs:** `Features/*/scope.yaml`, `Progress/*`, optional `Roadmap/linear-sync-*.md` (estados Linear / WAL).
+**Inputs:** `Features/*/scope.yaml`, `Progress/*`, optional `Roadmap/linear-sync-*.md` (estados Linear / artifact prefix).
 
 **Full skill:** [.cursor/skills/maintain-roadmap/SKILL.md](../.cursor/skills/maintain-roadmap/SKILL.md)
 

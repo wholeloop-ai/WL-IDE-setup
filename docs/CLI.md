@@ -171,7 +171,7 @@ Removed from the bundle in v0.2: `spec-validator`, `analyser`, `tracker-intake` 
 ## After install
 
 1. **project-conventions** agent — confirm or complete conventions.
-2. Product repo: ARTIFACT-WAL in `inbox/` or path in conventions.
+2. Product repo: product spec in `inbox/` or path in conventions.
 3. **spec-review** with Linear/Jira MCP or manual epic paste — [TRACKERS.md](TRACKERS.md).
 
 ## CI / monorepo

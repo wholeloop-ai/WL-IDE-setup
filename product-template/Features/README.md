@@ -5,7 +5,7 @@ One folder per feature slug (kebab-case):
 ```
 Features/<slug>/
   scope.yaml
-  ARTIFACT-WAL-NNN.md
+  ARTIFACT-{{ARTIFACT_PREFIX}}-NNN.md
   mockup.html   # optional
 ```
 
@@ -13,4 +13,4 @@ Features/<slug>/
 
 Skills: `brainstorm-feature`, `build-spec`
 
-Handoff: copy `ARTIFACT-WAL-*.md` to `{{APP_REPO}}/inbox/`.
+Handoff: copy `ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` to `{{APP_REPO}}/inbox/`.

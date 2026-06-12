@@ -58,7 +58,7 @@ Read `context.json → release_strategy.scope`:
 ```markdown
 ## What this PR delivers
 
-<one paragraph from ARTIFACT-WAL jtbd.primary>
+<one paragraph from product spec jtbd.primary>
 
 ## Stories included
 | Story | AC coverage | Deviations |

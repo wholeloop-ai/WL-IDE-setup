@@ -15,7 +15,7 @@ VS Code does **not** auto-discover `SKILL.md` like Cursor or Claude Code. You in
 ## Example prompts (Copilot Chat)
 
 ```
-Follow WHOLELOOP.md. Run spec-review for ARTIFACT-WAL-042 (Linear/Jira MCP or paste epic + stories).
+Follow WHOLELOOP.md. Run spec-review for ARTIFACT-<PREFIX>-042 (Linear/Jira MCP or paste epic + stories).
 ```
 
 ```

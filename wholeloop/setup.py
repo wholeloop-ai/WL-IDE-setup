@@ -82,9 +82,11 @@ def choose_product_location(name: str) -> Path:
             return cwd / folder
         if choice == "home":
             return Path.home() / folder
-        raw = P.ask_text(
-            "Full path to the new repo (or an existing folder to create it inside)",
-            required=True,
+        raw = P.normalize_path_input(
+            P.ask_text(
+                "Full path to the new repo (or an existing folder to create it inside)",
+                required=True,
+            )
         )
         dest, nested = resolve_product_dest(raw, name)
         if nested:
@@ -106,7 +108,7 @@ def choose_app_path() -> Path:
         )
         if choice == "here":
             return cwd
-        raw = P.ask_text("App repo path", required=True)
+        raw = P.normalize_path_input(P.ask_text("App repo path", required=True))
         p = Path(raw).expanduser()
         shown = p.resolve() if p.exists() else p
         if P.ask_yes_no(f"Install WholeLoop in  {shown}  ?", default=True):
@@ -339,7 +341,7 @@ def run_app_init(
         P.hint("Link the product repo so handoff can close the loop:")
         print(f"        wholeloop link <product-path-or-url>   {app}")
     P.hint("Next: run project-conventions agent in IDE → approve")
-    P.hint("Then: spec-review with ARTIFACT-WAL or epic · wholeloop doctor")
+    P.hint("Then: spec-review with product spec or epic · wholeloop doctor")
     return 0
 
 

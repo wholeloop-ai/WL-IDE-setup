@@ -20,7 +20,7 @@ human_gate: true
 
 ## Phase A — Draft (product repo, before build-spec)
 
-Triggered when: brainstorm-feature complete, PM confirms scope, mockup needed before ARTIFACT-WAL.
+Triggered when: brainstorm-feature complete, PM confirms scope, mockup needed before the product spec.
 
 Input: `Features/<slug>/scope.yaml`
 Produces: `Features/<slug>/mockup.html` — interactive HTML wireframe, not production UI.
@@ -41,7 +41,7 @@ Triggered when: spec-review gate approved, design detail needed before planner c
 Inputs:
 
 - `workspace/runs/<run-key>/context.json`
-- ARTIFACT-WAL spec
+- product spec
 - Phase A mockup if available
 
 Produces: `workspace/runs/<run-key>/design-notes.md`
@@ -67,7 +67,7 @@ Phase B:
 
 ```
 Run ui-ux-designer Phase B for run <RUN_KEY>.
-Read workspace/runs/<run-key>/context.json and the ARTIFACT-WAL spec.
+Read workspace/runs/<run-key>/context.json and the product spec.
 Produce workspace/runs/<run-key>/design-notes.md.
 One section per in_scope area. Flag open UX questions.
 Wait for approval before planner runs.

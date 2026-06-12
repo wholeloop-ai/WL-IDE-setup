@@ -2,11 +2,11 @@
 name: spec-review
 description: >
   Replaces spec-validator + analyser + tracker-intake.
-  Validates the ARTIFACT-WAL spec and/or Linear/Jira epic: implementability,
+  Validates the product spec and/or Linear/Jira epic: implementability,
   acceptance criteria completeness, stack constraints, scope.yaml validation gates.
   Detects the current state of the epic (no stories, stories exist, prior plan exists)
   and compiles all findings into context.json with spec_review_notes for the planner.
-  Accepts: ARTIFACT-WAL alone, epic alone, or both.
+  Accepts: product spec alone, epic alone, or both.
   Human gate required before planner runs.
 version: "2.0.0"
 author: WholeLoop
@@ -24,7 +24,7 @@ human_gate: true
 
 spec-review is the single agent that prepares every delivery run. It:
 
-1. Accepts whatever exists: ARTIFACT-WAL, a Linear/Jira epic, or both.
+1. Accepts whatever exists: product spec, a Linear/Jira epic, or both.
 2. Validates spec/epic implementability (previously spec-validator):
    - Acceptance criteria complete and testable
    - In-scope items unambiguous
@@ -52,13 +52,13 @@ spec-review is the single agent that prepares every delivery run. It:
 
 Accepts one or more of:
 
-- `spec_ref` — path to ARTIFACT-WAL-NNN.md or spec_id (from product repo or inbox/)
+- `spec_ref` — path to ARTIFACT-<PREFIX>-NNN.md or spec_id (from product repo or inbox/)
 - `epic_ref` — Linear epic ID, Jira epic key, or pasted epic text
-- `project-conventions.md` — always required
+- `project-conventions.md` — always required (§5 `spec_id_pattern` for your project's prefix)
 
 Reads if available:
 
-1. ARTIFACT-WAL spec
+1. product spec
 2. `scope.yaml` via spec.scope_file (if spec_ref provided)
 3. Epic and its child stories from tracker (Linear/Jira MCP or manual paste)
 4. `workspace/runs/<run-key>/plan.md` — to detect prior plan
@@ -71,7 +71,7 @@ spec-review detects one of four states and reports it:
 
 | State | Condition | Impact on spec_review_notes |
 |-------|-----------|----------------------------|
-| `spec-only` | ARTIFACT-WAL provided, no epic yet | Notes: epic not created yet |
+| `spec-only` | product spec provided, no epic yet | Notes: epic not created yet |
 | `epic-no-stories` | Epic exists, no child stories | Notes: ready for planner epic mode |
 | `epic-with-stories` | Epic + stories exist | Notes: story alignment check (see below) |
 | `epic-with-plan` | Epic + stories + prior plan.md | Notes: prior plan summary + delta assessment |
@@ -80,8 +80,8 @@ spec-review detects one of four states and reports it:
 
 For each existing story, spec-review checks:
 
-- Does it map to at least one acceptance criterion in the ARTIFACT-WAL?
-- Is anything in the ARTIFACT-WAL in_scope NOT covered by any story?
+- Does it map to at least one acceptance criterion in the product spec?
+- Is anything in the product spec in_scope NOT covered by any story?
 - Are any stories out of scope per the spec?
 
 Reports misalignments in `spec_review_notes.story_alignment`.
@@ -102,7 +102,7 @@ Reports in `spec_review_notes.prior_plan`. Does NOT decide to keep or replace �
 Run spec-review for <SPEC_REF and/or EPIC_REF>.
 
 1. Read project-conventions.md.
-2. Read ARTIFACT-WAL if provided. Read epic if provided. If both, cross-check consistency.
+2. Read the product spec if provided. Read epic if provided. If both, cross-check consistency.
 3. Read scope.yaml via spec.scope_file if available.
    Stop if any validation_gates are open — list them and halt.
 4. Analyse stack constraints vs project-conventions.
@@ -146,7 +146,7 @@ Write to `workspace/runs/<run-key>/context.json`:
 {
   "run": {
     "run_key": "PROJ-SPEC-042",
-    "spec_ref": "ARTIFACT-WAL-042",
+    "spec_ref": "ARTIFACT-<PREFIX>-042",
     "epic_ref": "PROJ-EPIC-10",
     "spec_title": "...",
     "tracker_provider": "linear|jira|manual",

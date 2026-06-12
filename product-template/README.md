@@ -14,7 +14,7 @@
 
 When a spec is ready (`build-spec`):
 
-1. `Features/<slug>/ARTIFACT-WAL-<NNN>.md`
+1. `Features/<slug>/ARTIFACT-{{ARTIFACT_PREFIX}}-<NNN>.md`
 2. Copy to `{{APP_REPO}}/inbox/` (or path in `Context/org-repositories.md`)
 3. Run **spec-review** in the app repo
 
@@ -26,6 +26,6 @@ When a spec is ready (`build-spec`):
 | `synthesize-meeting` | Transcript in `Product Meetings/meetings/` |
 | `brainstorm-feature` | → `Features/<slug>/scope.yaml` |
 | `maintain-roadmap` | → `Context/roadmap-snapshot.md` |
-| `build-spec` | → `ARTIFACT-WAL-*.md` + `inbox/` |
+| `build-spec` | → `ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` + `inbox/` |
 
 Install this layout: `wholeloop init-product <path>`

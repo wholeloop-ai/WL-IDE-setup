@@ -20,7 +20,7 @@ Portable **skills + CLI + docs**. No background orchestrator, no n8n — **Curso
 
 1. **Product repo is the center** — Durable truth: `Features/`, interviews, inbox, `delivery_notes` after handoff. Not optional for a full WholeLoop loop.
 2. **App repo executes delivery** — Code plus `workspace/runs/` (ephemeral); skills via `wholeloop app init` / `app update`.
-3. **Stories in the tracker** — Linear, Jira, or manual; linked to ARTIFACT-WAL in the product repo.
+3. **Stories in the tracker** — Linear, Jira, or manual; linked to product spec in the product repo.
 4. **Human gates** — After spec-review and planner (and PR when applicable).
 5. **IDE-native** — Skills + MCP or pasted stories; no WholeLoop server to deploy.
 

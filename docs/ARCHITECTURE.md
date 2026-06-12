@@ -2,7 +2,7 @@
 
 ## System shape
 
-WholeLoop is **product-centered**: the product repository is the long-lived system of record (scope, ARTIFACT-WAL, interviews, inbox, `delivery_notes`, progress). App repositories hold code and **ephemeral** `workspace/runs/` for each delivery. The v0.2 pipeline runs in the app; **handoff** writes back to the product repo so truth stays in one place.
+WholeLoop is **product-centered**: the product repository is the long-lived system of record (scope, product spec, interviews, inbox, `delivery_notes`, progress). App repositories hold code and **ephemeral** `workspace/runs/` for each delivery. The v0.2 pipeline runs in the app; **handoff** writes back to the product repo so truth stays in one place.
 
 See **[WORKFLOW_PRODUCT_LINEAR.md](WORKFLOW_PRODUCT_LINEAR.md)** and **[TRACKERS.md](TRACKERS.md)**.
 

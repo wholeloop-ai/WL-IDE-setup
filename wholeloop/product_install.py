@@ -6,9 +6,38 @@ import shutil
 from pathlib import Path
 
 from wholeloop.assets import product_template_src
+from wholeloop.names import artifact_prefix, write_product_config
 
 PRODUCT_MARKER = ".wholeloop-product-template"
 PRODUCT_SKILLS_REL = Path(".cursor") / "skills"
+_TEXT_SUFFIXES = {".md", ".yaml", ".yml", ".json", ".txt", ".html", ".mdc"}
+
+
+def apply_product_placeholders(dest: Path, product_name: str) -> list[str]:
+    """Replace {{…}} placeholders and write wholeloop-product.json."""
+    prefix = artifact_prefix(product_name)
+    replacements = {
+        "{{PRODUCT_NAME}}": product_name,
+        "{{ARTIFACT_PREFIX}}": prefix,
+        "{{PRODUCT_REPO}}": dest.name,
+    }
+    patched = 0
+    for path in dest.rglob("*"):
+        if not path.is_file():
+            continue
+        if path.suffix.lower() not in _TEXT_SUFFIXES:
+            continue
+        text = path.read_text(encoding="utf-8")
+        new = text
+        for old, new_val in replacements.items():
+            new = new.replace(old, new_val)
+        if new != text:
+            path.write_text(new, encoding="utf-8")
+            patched += 1
+    cfg = write_product_config(dest, product_name)
+    lines = [f"patch product placeholders ({patched} files, name: {product_name})"]
+    lines.append(f"spec id pattern: ARTIFACT-{cfg['artifact_prefix']}-NNN")
+    return lines
 
 
 def is_product_repo(path: Path) -> bool:
@@ -52,12 +81,7 @@ def install_product_repo(
     lines.append(f"write product repo template ({n_files} files)")
 
     if product_name:
-        readme = dest / "README.md"
-        if readme.is_file():
-            text = readme.read_text(encoding="utf-8")
-            text = text.replace("{{PRODUCT_REPO}}", product_name)
-            readme.write_text(text, encoding="utf-8")
-            lines.append(f"patch README.md (product name: {product_name})")
+        lines.extend(apply_product_placeholders(dest, product_name))
 
     lines.append("hint  Open in Cursor — no wholeloop CLI required in product repo")
     lines.append("hint  Next: fill Context/icp-profiles.md → synthesize-interview")

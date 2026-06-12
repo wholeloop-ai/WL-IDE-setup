@@ -1,7 +1,7 @@
 """Connect an app repo to its product repo — the discovery↔delivery loop.
 
 Writes the product reference into the app's project-conventions.md so that
-spec-review can find ARTIFACT-WAL in the product `inbox/` and handoff knows where
+spec-review can find product spec in the product `inbox/` and handoff knows where
 to append `delivery_notes`. Also records the pair in ~/.wholeloop/config.json.
 """
 

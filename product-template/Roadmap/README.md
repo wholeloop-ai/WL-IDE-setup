@@ -35,4 +35,4 @@ Feature-level briefs (not tickets). Created by `synthesize-meeting` (`roadmap_ac
 - [ ]
 ```
 
-Canonical scope for ADWF: `Features/<slug>/scope.yaml` → `ARTIFACT-WAL-*.md`.
+Canonical scope for ADWF: `Features/<slug>/scope.yaml` → `ARTIFACT-{{ARTIFACT_PREFIX}}-*.md`.

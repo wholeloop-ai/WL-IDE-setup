@@ -32,7 +32,8 @@
 | Setting | Value |
 |---------|--------|
 | **provider** | `linear` \| `jira` \| `manual` |
-| **Default spec path** | `../product-repo/specs/{spec_id}.md` |
+| **spec_id_pattern** | `ARTIFACT-<PREFIX>-NNN` (from product repo `wholeloop-product.json`) |
+| **Default spec path** | `../product-repo/inbox/{spec_id}.md` |
 
 PM creates stories **after** spec `status: approved`. See WholeLoop **`docs/TRACKERS.md`**.
 
@@ -41,7 +42,7 @@ PM creates stories **after** spec `status: approved`. See WholeLoop **`docs/TRAC
 | Setting | Value |
 |---------|--------|
 | **Strategy** | `label` \| `epic_parent` \| `custom_field` |
-| **Label prefix** | e.g. `spec:` → `spec:SPEC-2025-042` |
+| **Label prefix** | e.g. `spec:` → `spec:ARTIFACT-<PREFIX>-042` |
 | **Linear team / project** | |
 
 ### If `jira`

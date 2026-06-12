@@ -1,6 +1,6 @@
 # build-spec
 
-**Job:** `scope.yaml` (scoped, gates answered) → `ARTIFACT-WAL-<NNN>.md` + `inbox/` copy.
+**Job:** `scope.yaml` (scoped, gates answered) → `ARTIFACT-{{ARTIFACT_PREFIX}}-<NNN>.md` + `inbox/` copy.
 
 **Handoff:** copy artifact to `{{APP_REPO}}/inbox/` → run **spec-review** in the app repo.
 

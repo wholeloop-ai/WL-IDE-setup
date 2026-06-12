@@ -3,7 +3,7 @@
 Package on PyPI: **[wholeloop-cli](https://pypi.org/project/wholeloop-cli/)**  
 Command: **`wholeloop`**
 
-**Current release:** `0.3.3` (match [pyproject.toml](../pyproject.toml) when cutting a release)
+**Current release:** `0.3.4` (match [pyproject.toml](../pyproject.toml) when cutting a release)
 
 Install the CLI **once per machine**, then run **`wholeloop setup`** for a guided product-repo + app-repo flow (or `wholeloop product init` and `wholeloop app init` by role). The product repo is the durable center of WholeLoop; the app repo runs delivery. Usage: **[docs/CLI.md](../docs/CLI.md)** · setup: **[docs/SETUP_NEW_PROJECT.md](../docs/SETUP_NEW_PROJECT.md)**.
 
@@ -20,7 +20,7 @@ Install the runtime with Homebrew, then install `wholeloop-cli` from PyPI.
 
 ```bash
 brew install uv
-uv tool install wholeloop-cli==0.3.3
+uv tool install wholeloop-cli==0.3.4
 wholeloop version
 ```
 
@@ -37,7 +37,7 @@ brew install pipx
 pipx ensurepath
 # restart terminal (or: exec $SHELL -l)
 
-pipx install wholeloop-cli==0.3.3
+pipx install wholeloop-cli==0.3.4
 wholeloop version
 ```
 
@@ -57,7 +57,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 # macOS with Homebrew:
 # brew install uv
 
-uv tool install wholeloop-cli==0.3.3
+uv tool install wholeloop-cli==0.3.4
 wholeloop version
 ```
 
@@ -70,7 +70,7 @@ uv tool install wholeloop-cli --upgrade --force
 **From this repo (contributors or before PyPI):**
 
 ```bash
-uv tool install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.3.3
+uv tool install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.3.4
 # editable:
 uv tool install /path/to/WL-IDE-setup --force
 ```
@@ -86,7 +86,7 @@ uv tool install wholeloop-cli --upgrade --force --index-strategy unsafe-best-mat
 Or install only from public PyPI for one command:
 
 ```bash
-uv tool install wholeloop-cli==0.3.3 --force \
+uv tool install wholeloop-cli==0.3.4 --force \
   --default-index https://pypi.org/simple --index https://pypi.org/simple
 ```
 
@@ -99,7 +99,7 @@ python3 -m pip install --user pipx   # if needed
 pipx ensurepath
 # restart shell
 
-pipx install wholeloop-cli==0.3.3
+pipx install wholeloop-cli==0.3.4
 wholeloop version
 ```
 
@@ -108,7 +108,7 @@ wholeloop version
 **From Git:**
 
 ```bash
-pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.3.3
+pipx install git+https://github.com/wholeloop-ai/WL-IDE-setup.git@v0.3.4
 ```
 
 ---
@@ -120,7 +120,7 @@ For contributors or locked environments:
 ```bash
 python3 -m venv ~/.venvs/wholeloop
 source ~/.venvs/wholeloop/bin/activate
-pip install wholeloop-cli==0.3.3
+pip install wholeloop-cli==0.3.4
 wholeloop version
 ```
 
@@ -135,7 +135,7 @@ which wholeloop
 wholeloop version
 ```
 
-Expected: `wholeloop 0.3.3` (or newer if you used `--upgrade`).
+Expected: `wholeloop 0.3.4` (or newer if you used `--upgrade`).
 
 ---
 
@@ -169,7 +169,7 @@ Do **not** use `product init --force` on a repo that already has features, inter
 ### Upgrade from v0.1
 
 ```bash
-uv tool install wholeloop-cli==0.3.3 --upgrade --force
+uv tool install wholeloop-cli==0.3.4 --upgrade --force
 cd /path/to/your-app
 wholeloop app update      # skills + WHOLELOOP.md + IDE instructions
 wholeloop doctor
@@ -183,14 +183,14 @@ Use `wholeloop app update --no-refresh-docs` if you customized `WHOLELOOP.md`.
 ## CI / monorepo
 
 ```bash
-uv tool install wholeloop-cli==0.3.3
+uv tool install wholeloop-cli==0.3.4
 wholeloop app init ./apps/web --product ../my-product --force
 ```
 
 Or one-off without global install:
 
 ```bash
-uvx --from wholeloop-cli==0.3.3 wholeloop app init ./apps/web --force
+uvx --from wholeloop-cli==0.3.4 wholeloop app init ./apps/web --force
 ```
 
 ---

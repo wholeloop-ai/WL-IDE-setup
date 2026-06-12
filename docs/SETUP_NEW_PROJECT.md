@@ -10,7 +10,7 @@ WholeLoop assumes a **product repo** (durable product truth) and at least one **
 2. [ ] **Product repo** — `wholeloop product init <path> --name <name>` for a **new** repo ([CLI.md](CLI.md))
 3. [ ] Fill `Context/` (ICP, roadmap pointers) and start `Features/<slug>/scope.yaml`
 4. [ ] (Optional) **ui-ux-designer Phase A** → `mockup.html`
-5. [ ] **build-spec** → ARTIFACT-WAL + epic in tracker (no child stories yet)
+5. [ ] **build-spec** → product spec + epic in tracker (no child stories yet)
 6. [ ] Product `inbox/` or copy path documented for the app team
 
 > **Existing product repo:** do **not** run `product init --force` — it deletes all `Features/`, `Interviews/`, `Progress/`, etc. Refresh PM skills safely with `wholeloop product update`.
@@ -24,7 +24,7 @@ WholeLoop assumes a **product repo** (durable product truth) and at least one **
 5. [ ] **`workspace/`** in **`.gitignore`** (`wholeloop app init` adds it)
 6. [ ] **IDEs** — Cursor, Claude Code, VS Code ([IDE_SETUP.md](IDE_SETUP.md))
 7. [ ] Tracker: Linear/Jira MCP and/or **manual** — [TRACKERS.md](TRACKERS.md)
-8. [ ] App **README**: ARTIFACT-WAL / epic → spec-review → planner → per-story execution
+8. [ ] App **README**: product spec / epic → spec-review → planner → per-story execution
 9. [ ] (Optional) **CI** — path filters, forbidden dirs
 
 ## Delivery skills (app repo)
@@ -42,7 +42,7 @@ WholeLoop assumes a **product repo** (durable product truth) and at least one **
 
 ## IDE workflow (summary)
 
-1. **spec-review** — ARTIFACT-WAL and/or epic → `context.json` + gate.
+1. **spec-review** — product spec and/or epic → `context.json` + gate.
 2. *(optional)* **ui-ux-designer Phase B** → `design-notes.md`.
 3. **planner** → `plan.md` per story + gate → builder or manual.
 4. **reviewer** → **pr-agent** → gate → **handoff**.

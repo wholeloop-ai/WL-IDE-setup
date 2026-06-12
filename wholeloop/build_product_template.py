@@ -260,7 +260,7 @@ def _write_generic_docs(root: Path) -> None:
 
 When a spec is ready (`build-spec`):
 
-1. `Features/<slug>/ARTIFACT-WAL-<NNN>.md`
+1. `Features/<slug>/ARTIFACT-{{ARTIFACT_PREFIX}}-<NNN>.md`
 2. Copy to `{{APP_REPO}}/inbox/` (or path in `Context/org-repositories.md`)
 3. Run **spec-review** in the app repo
 
@@ -272,7 +272,7 @@ When a spec is ready (`build-spec`):
 | `synthesize-meeting` | Transcript in `Product Meetings/meetings/` |
 | `brainstorm-feature` | → `Features/<slug>/scope.yaml` |
 | `maintain-roadmap` | → `Context/roadmap-snapshot.md` |
-| `build-spec` | → `ARTIFACT-WAL-*.md` + `inbox/` |
+| `build-spec` | → `ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` + `inbox/` |
 
 Install this layout: `wholeloop init-product <path>`
 """,
@@ -292,7 +292,7 @@ Context → Interviews + Surveys → Analytics → Product Meetings → OST → 
 
 ## Key paths
 
-- **Features/** — `scope.yaml`, `ARTIFACT-WAL-NNN.md`, optional mockups
+- **Features/** — `scope.yaml`, `ARTIFACT-{{ARTIFACT_PREFIX}}-NNN.md`, optional mockups
 - **Progress/adwf-handoffs/** — closure summaries after delivery (`handoff` agent in app repo)
 - **inbox/** — mirror of approved artifacts before copy to app repo
 
@@ -303,7 +303,7 @@ See `Context/org-repositories.md`. App delivery uses WholeLoop v0.2: **spec-revi
 ## Conventions
 
 - Dates: `YYYY-MM-DD` in filenames
-- Artifact prefix: `ARTIFACT-WAL-NNN` (increment per existing files in `Features/`)
+- Artifact prefix: `ARTIFACT-{{ARTIFACT_PREFIX}}-NNN` (increment per existing files in `Features/`)
 - Quotes in synthesis need `quote_refs`; assumptions go in `risks_and_assumptions`
 """,
         encoding="utf-8",
@@ -317,7 +317,7 @@ One folder per feature slug (kebab-case):
 ```
 Features/<slug>/
   scope.yaml
-  ARTIFACT-WAL-NNN.md
+  ARTIFACT-{{ARTIFACT_PREFIX}}-NNN.md
   mockup.html   # optional
 ```
 
@@ -325,7 +325,7 @@ Features/<slug>/
 
 Skills: `brainstorm-feature`, `build-spec`
 
-Handoff: copy `ARTIFACT-WAL-*.md` to `{{APP_REPO}}/inbox/`.
+Handoff: copy `ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` to `{{APP_REPO}}/inbox/`.
 """,
         encoding="utf-8",
     )
@@ -354,7 +354,7 @@ Naming: `YYYY-MM-DD-<run-key>-handoff.md`
 
 Use `TEMPLATE-handoff.md` as the starting shape.
 
-Does not replace `Features/<slug>/ARTIFACT-WAL-*.md` — this is the operational closure summary.
+Does not replace `Features/<slug>/ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` — this is the operational closure summary.
 """,
         encoding="utf-8",
     )
@@ -414,8 +414,8 @@ Example: `2026-06-01-epic-checkout-v2.md`
 
 When `build-spec` completes:
 
-1. Writes `Features/<slug>/ARTIFACT-WAL-<NNN>.md`
-2. Copies to `inbox/ARTIFACT-WAL-<NNN>.md`
+1. Writes `Features/<slug>/ARTIFACT-{{ARTIFACT_PREFIX}}-<NNN>.md`
+2. Copies to `inbox/ARTIFACT-{{ARTIFACT_PREFIX}}-<NNN>.md`
 3. Copy to **`{{APP_REPO}}/inbox/`** (or path in org-repositories.md)
 
 Delivery runs in the app repo via WholeLoop **spec-review** (see `wholeloop init` in {{APP_REPO}}).

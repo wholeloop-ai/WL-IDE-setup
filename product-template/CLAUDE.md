@@ -10,7 +10,7 @@ Context → Interviews + Surveys → Analytics → Product Meetings → OST → 
 
 ## Key paths
 
-- **Features/** — `scope.yaml`, `ARTIFACT-WAL-NNN.md`, optional mockups
+- **Features/** — `scope.yaml`, `ARTIFACT-{{ARTIFACT_PREFIX}}-NNN.md`, optional mockups
 - **Progress/adwf-handoffs/** — closure summaries after delivery (`handoff` agent in app repo)
 - **inbox/** — mirror of approved artifacts before copy to app repo
 
@@ -21,5 +21,5 @@ See `Context/org-repositories.md`. App delivery uses WholeLoop v0.2: **spec-revi
 ## Conventions
 
 - Dates: `YYYY-MM-DD` in filenames
-- Artifact prefix: `ARTIFACT-WAL-NNN` (increment per existing files in `Features/`)
+- Artifact prefix: `ARTIFACT-{{ARTIFACT_PREFIX}}-NNN` (increment per existing files in `Features/`)
 - Quotes in synthesis need `quote_refs`; assumptions go in `risks_and_assumptions`

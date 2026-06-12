@@ -19,7 +19,7 @@ Creates:
 
 ## Usage
 
-- “Follow **WHOLELOOP.md**, run **spec-review** for ARTIFACT-WAL-042” (Linear/Jira MCP or manual paste)
+- “Follow **WHOLELOOP.md**, run **spec-review** for ARTIFACT-<PREFIX>-042” (Linear/Jira MCP or manual paste)
 - Enable **Linear** or **Jira MCP** per [TRACKERS.md](TRACKERS.md)
 
 ## Rules + skills

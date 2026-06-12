@@ -7,4 +7,4 @@ Naming: `YYYY-MM-DD-<run-key>-handoff.md`
 
 Use `TEMPLATE-handoff.md` as the starting shape.
 
-Does not replace `Features/<slug>/ARTIFACT-WAL-*.md` — this is the operational closure summary.
+Does not replace `Features/<slug>/ARTIFACT-{{ARTIFACT_PREFIX}}-*.md` — this is the operational closure summary.

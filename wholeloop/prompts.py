@@ -96,6 +96,14 @@ def ask_choice(
         print(f"    Enter a number between 1 and {len(options)}.")
 
 
+def normalize_path_input(raw: str) -> str:
+    """Strip whitespace and shell-style quotes pasted into path prompts."""
+    s = raw.strip()
+    if len(s) >= 2 and s[0] == s[-1] and s[0] in ("'", '"'):
+        s = s[1:-1].strip()
+    return s
+
+
 def ask_path(
     question: str,
     *,
@@ -103,7 +111,7 @@ def ask_path(
     must_exist: bool = False,
 ) -> Path:
     while True:
-        raw = ask_text(question, default=default, required=True)
+        raw = normalize_path_input(ask_text(question, default=default, required=True))
         path = Path(raw).expanduser()
         if must_exist and not path.exists():
             print(f"    Path does not exist: {path}")

@@ -13,10 +13,10 @@ scope.yaml
   └─ ui-ux-designer Phase A (opt)
        └─ mockup.html
 build-spec
-  └─ ARTIFACT-WAL-NNN  ──────────► Epic created (no stories yet)
+  └─ ARTIFACT-<PREFIX>-NNN  ──────────► Epic created (no stories yet)
   └─ inbox/ copy
                                                         spec-review
-                                                          accepts: ARTIFACT-WAL / epic / both
+                                                          accepts: product spec / epic / both
                                                           detects: epic state + prior plan
                                                           writes:  context.json + spec_review_notes
                                                         ⊙ human gate
@@ -37,8 +37,8 @@ build-spec
                                                           closes: stories + epic
 ```
 
-1. PM authors scope and (optionally) mockup in the product repo; **build-spec** writes ARTIFACT-WAL and creates the epic (no child stories).
-2. Developer runs **spec-review** with ARTIFACT-WAL and/or epic ref.
+1. PM authors scope and (optionally) mockup in the product repo; **build-spec** writes product spec and creates the epic (no child stories).
+2. Developer runs **spec-review** with product spec and/or epic ref.
 3. Optional **ui-ux-designer Phase B** → **planner** → per-story **builder** or manual → **reviewer** → **pr-agent** → **handoff**.
 
 ## Linking spec ↔ stories
@@ -47,14 +47,14 @@ Document in app `project-conventions.md` → **Issue tracker**.
 
 | Provider | Typical link |
 |----------|----------------|
-| **linear** | Label `spec:ARTIFACT-WAL-NNN`, epic parent |
+| **linear** | Label `spec:ARTIFACT-<PREFIX>-NNN`, epic parent |
 | **jira** | Epic link, label, or JQL |
 | **manual** | Epic description + pasted stories at spec-review |
 
 Spec frontmatter:
 
 ```yaml
-spec_id: ARTIFACT-WAL-042
+spec_id: ARTIFACT-<PREFIX>-042
 epic_ref: PROJ-EPIC-10
 tracker_provider: linear
 ```
@@ -90,7 +90,7 @@ wholeloop init
 
 ## Typical session
 
-1. **spec-review** — ARTIFACT-WAL and/or epic ref → detects state → context.json
+1. **spec-review** — product spec and/or epic ref → detects state → context.json
 2. ⊙ Human gate
 3. *(optional)* **ui-ux-designer Phase B** → design-notes.md → ⊙ human gate
 4. **planner** — reads spec_review_notes, picks mode, creates/updates plans
@@ -145,6 +145,6 @@ handoff               → release note + delivery_notes + .done
 
 ## Checklists
 
-**Product repo:** `Features/<slug>/scope.yaml`, ARTIFACT-WAL, epic after build-spec.
+**Product repo:** `Features/<slug>/scope.yaml`, product spec, epic after build-spec.
 
 **App repo:** [SETUP_NEW_PROJECT.md](SETUP_NEW_PROJECT.md), [TRACKERS.md](TRACKERS.md).

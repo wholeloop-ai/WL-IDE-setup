@@ -32,7 +32,7 @@ produces one release note for the full epic, plus individual story comments.
 
 1. `context.json` — full run state: release_strategy, story_reviews, pr block, spec_ref, epic_ref, scope_file
 2. `workspace/runs/<story-key>/review-report.md` (per story)
-3. ARTIFACT-WAL spec — for release note framing
+3. product spec — for release note framing
 4. `scope.yaml` via scope_file — for delivery_notes
 
 ## Actions
@@ -44,13 +44,13 @@ Build from `context.json → pr.release_notes_draft` + review blocks.
 ```markdown
 # Release: <title> — <YYYY-MM-DD>
 
-**Spec:** <ARTIFACT-WAL ref>
+**Spec:** <product spec ref>
 **Epic:** <epic ref>
 **Stories:** <list or single>
 **PR:** <url>
 
 ## What shipped
-<user-facing description from ARTIFACT-WAL jtbd.primary>
+<user-facing description from product spec jtbd.primary>
 
 ### Changes
 - ...  (from pr.release_notes_draft.what_changed)
@@ -105,7 +105,7 @@ delivery_notes:
   delivered_date: YYYY-MM-DD
   release_strategy: story | epic
   run_key: <run-key>
-  artifact_ref: ARTIFACT-WAL-NNN
+  artifact_ref: ARTIFACT-<PREFIX>-NNN
   epic_ref: <epic-key>
   story_keys: []
   pr_url: <from context.json pr.url>
@@ -127,7 +127,7 @@ If `maintain-roadmap` is configured: write a one-line signal file at
 ```yaml
 date: YYYY-MM-DD
 feature_slug: <slug>
-artifact_ref: ARTIFACT-WAL-NNN
+artifact_ref: ARTIFACT-<PREFIX>-NNN
 status: shipped
 deferred_items: N
 release_note: <path>

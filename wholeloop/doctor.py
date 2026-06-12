@@ -123,7 +123,7 @@ def run_doctor(app: Path) -> tuple[bool, list[str]]:
     if ok:
         lines.append(f"Ready for WholeLoop v{PIPELINE_VERSION}.")
         lines.append(f"  Pipeline: {PIPELINE_LINE}")
-        lines.append("  Next: spec-review with ARTIFACT-WAL and/or epic (docs/TRACKERS.md).")
+        lines.append("  Next: spec-review with product spec and/or epic (docs/TRACKERS.md).")
     else:
         lines.append("Fix issues above, then: wholeloop doctor")
 

@@ -33,7 +33,7 @@ halt and tell the developer to run spec-review first.
 
 ## Mode 1 — No stories yet (epic_state: spec-only or epic-no-stories)
 
-1. Reads context.json, ARTIFACT-WAL, design-notes.md (if present), spec_review_notes.
+1. Reads context.json, product spec, design-notes.md (if present), spec_review_notes.
 2. Decomposes spec into user stories — one per distinct user-facing outcome.
 3. Creates child stories under the epic in Linear/Jira/manual.
 4. Writes `workspace/runs/<story-key>/plan.md` for each story.
@@ -41,7 +41,7 @@ halt and tell the developer to run spec-review first.
 
 Story creation rules:
 
-- Each story maps to one or more acceptance criteria from the ARTIFACT-WAL.
+- Each story maps to one or more acceptance criteria from the product spec.
 - Title: imperative, user-facing ("Add price history chart to PDP").
 - Max 8 stories per epic — flag for PM to split spec if more needed.
 
@@ -49,7 +49,7 @@ Story creation rules:
 
 ## Mode 2 — Stories exist, no prior plan (epic_state: epic-with-stories)
 
-1. Reads context.json, ARTIFACT-WAL, existing stories from tracker, spec_review_notes.
+1. Reads context.json, product spec, existing stories from tracker, spec_review_notes.
 2. Reviews spec_review_notes.story_alignment — notes any misaligned stories for PM.
 3. Writes `workspace/runs/<story-key>/plan.md` for each story.
 4. Does NOT create or delete stories — only writes plans for what exists.
@@ -63,7 +63,7 @@ If story_alignment shows uncovered in_scope items or out-of-scope stories:
 
 ## Mode 3 — Stories exist + prior plan (epic_state: epic-with-plan)
 
-1. Reads context.json, ARTIFACT-WAL, existing stories, prior plan.md, spec_review_notes.
+1. Reads context.json, product spec, existing stories, prior plan.md, spec_review_notes.
 2. Reads spec_review_notes.prior_plan (spec-review's assessment of the prior plan).
 3. Decides: edit existing plan.md or replace it entirely.
    - Edit if: spec unchanged, plan still mostly valid, only minor adjustments needed.
@@ -121,7 +121,7 @@ File: `workspace/runs/<story-key>/plan.md`
 ```markdown
 # Plan: <story-key> — <story title>
 
-**Spec:** <ARTIFACT-WAL ref>
+**Spec:** <product spec ref>
 **Epic:** <epic key>
 **Generated:** YYYY-MM-DD
 **Mode:** no-stories | stories-no-plan | stories-with-plan (edited|replaced)
@@ -131,7 +131,7 @@ File: `workspace/runs/<story-key>/plan.md`
 <1–3 sentences: what this story is and how it fits the epic>
 
 ## Acceptance criteria to satisfy
-- [ ] Given ... when ... then ... (from ARTIFACT-WAL)
+- [ ] Given ... when ... then ... (from product spec)
 
 ## What is already done
 <from tracker state or prior plan — empty if nothing done>

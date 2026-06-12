@@ -27,7 +27,7 @@ Runs **per story** regardless of release_strategy (story or epic).
 Required (read in this order):
 
 1. `workspace/runs/<story-key>/plan.md` — the execution commitment
-2. ARTIFACT-WAL spec — acceptance criteria source of truth
+2. product spec — acceptance criteria source of truth
 3. `workspace/runs/<run-key>/context.json` — spec, epic, release_strategy
 4. All modified files from builder / manual execution
 5. `project-conventions.md` — stack rules, test requirements
@@ -43,7 +43,7 @@ Required (read in this order):
 
 ### Layer 2 — Acceptance criteria coverage
 
-- [ ] Every AC item from ARTIFACT-WAL in_scope mapped to code + test
+- [ ] Every AC item from product spec in_scope mapped to code + test
 - [ ] Given/When/Then verifiable from the implementation
 - [ ] No AC item missing without a recorded deferral reason
 

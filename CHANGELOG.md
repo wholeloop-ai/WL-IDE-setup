@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.4
+
+- **Path prompts strip shell quotes.** Pasting a path like `'/Users/you/app'` no longer creates a folder literally named `'` — surrounding `'` and `"` are removed before resolving.
+- **Project-specific spec IDs.** Product init derives an artifact prefix from the product name (e.g. HAYAverse→`HAYA`, Walliu→`WAL`) and writes `wholeloop-product.json`. Templates and `wholeloop link` use `ARTIFACT-<PREFIX>-NNN` instead of hardcoded `ARTIFACT-WAL`.
+
 ## 0.3.3
 
 - **`app update` self-heals scaffolding:** it now recreates `workspace/runs/` and ensures `.gitignore` lists `workspace/` (previously only `init` did this, so updated-from-old repos failed `doctor`).

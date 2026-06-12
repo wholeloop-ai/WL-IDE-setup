@@ -65,7 +65,8 @@ Propose concrete text for empty or TODO sections:
 Ask targeted questions. Examples:
 
 - “Is `tracker.provider` **linear**, **jira**, or **manual**?”
-- “Product specs / ARTIFACT-WAL path (e.g. `../product-repo/`, `inbox/`)?”
+- “Product spec inbox path (e.g. `../product-repo/inbox/`)?”
+- “`spec_id_pattern` from product `wholeloop-product.json` (e.g. `ARTIFACT-HAYA-NNN`)?”
 - “Are agents allowed to edit `infra/`?”
 - “Test command for CI/local: …?”
 - “Release strategy default: one PR per story or one per epic?”
@@ -112,7 +113,7 @@ Apply only items that apply to this file; show diff before `approve`.
 |------|-------------------------|------------|
 | Agent names | spec-validator, analyser, tracker-intake | **spec-review** (single intake + validation) |
 | Cohort intake | “cohort at intake”, tracker-intake paste | spec-review: epic + stories (MCP or manual paste) |
-| Spec ID examples | `SPEC-2025-042` only | **ARTIFACT-WAL-NNN** where team uses WAL specs |
+| Spec ID examples | `SPEC-2025-042` only | **ARTIFACT-<PREFIX>-NNN** per product `wholeloop-product.json` |
 | Run paths §6 | `workspace/runs/<story-key>/context.json` only | `workspace/runs/<run-key>/context.json` + optional `design-notes.md`, `<story-key>/plan.md`, `.done` |
 | Agent dependency table | rows for tracker-intake, spec-validator, analyser | table in § “How this file affects other agents” (this skill) |
 | Manual tracker § | “run spec-validator” | “paste epic + stories at **spec-review**” |

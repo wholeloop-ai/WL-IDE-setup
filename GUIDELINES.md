@@ -6,7 +6,7 @@ Use with **README.md** when onboarding a team.
 
 | Term | Meaning |
 |------|---------|
-| **Spec** | ARTIFACT-WAL markdown in the **product** repo (e.g. `ARTIFACT-WAL-042.md`). |
+| **Spec** | `ARTIFACT-<PREFIX>-NNN` markdown in the **product** repo (prefix from `wholeloop-product.json`, e.g. `ARTIFACT-HAYA-042.md`). |
 | **Story** | User story in Linear, Jira, or a manual list — linked to that spec. |
 | **spec-review** | Replaces spec-validator + analyser + tracker-intake. Validates spec/epic, detects epic state, passes spec_review_notes to planner. |
 | **ui-ux-designer** | Phase A (pre-spec, product repo) · Phase B (pre-planner, delivery repo). |
@@ -28,7 +28,7 @@ WholeLoop is intentionally **two repositories**. The **product repo** holds ever
 
 | Layer | Repo | Role |
 |-------|------|------|
-| **Truth** | Product | Scope, ARTIFACT-WAL, interviews, roadmap context, inbox copies, `delivery_notes` after ship |
+| **Truth** | Product | Scope, product spec, interviews, roadmap context, inbox copies, `delivery_notes` after ship |
 | **Execution** | App | Code, `wholeloop app init` skills, gitignored `workspace/runs/` per delivery |
 
 **Scaffold:**
@@ -48,7 +48,7 @@ The `--product` flag (or `wholeloop link <product>`) writes the product repo pat
 <product>/
 ├── Features/<slug>/
 │   ├── scope.yaml              # intent, status, delivery_notes (handoff writes here)
-│   ├── ARTIFACT-WAL-NNN.md     # canonical spec
+│   ├── ARTIFACT-<PREFIX>-NNN.md     # canonical spec
 │   └── mockup.html             # optional (ui-ux-designer Phase A)
 ├── Interviews/                 # raw, processed, master.yaml
 ├── inbox/                      # copies of specs for cross-repo handoff
@@ -164,7 +164,7 @@ LLM API keys live in the **IDE**, not in WholeLoop templates.
 ## 8. Keeping product and app in sync
 
 - **Discovery → spec:** PM agents in the product repo (`build-spec`, interviews, roadmap) write durable artifacts under `Features/` and `Context/`.
-- **Spec → delivery:** ARTIFACT-WAL (and/or epic in the tracker) flows into the app — typically via product `inbox/` and **spec-review**.
+- **Spec → delivery:** product spec (and/or epic in the tracker) flows into the app — typically via product `inbox/` and **spec-review**.
 - **Delivery → product:** **handoff** appends `delivery_notes` to `Features/<slug>/scope.yaml` and may write under `Progress/` — the loop closes in the product repo.
 - One **WholeLoop run** per `run-key` in the app repo (may contain multiple stories); runs are disposable, product docs are not.
 

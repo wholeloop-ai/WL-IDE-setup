@@ -10,6 +10,7 @@ import sys
 from pathlib import Path
 
 from wholeloop.assets import references_dir
+from wholeloop.names import read_artifact_prefix
 
 BOOTSTRAP_MARKER = "<!-- wholeloop:cli-bootstrap -->"
 IMPORTED_MARKER = "<!-- wholeloop:team-import -->"
@@ -432,7 +433,7 @@ def normalize_product_ref(app: Path, product_ref: str) -> tuple[str, str, str]:
 
     config_value: absolute path or URL stored in global config.
     display: what we write into conventions (relative path when local + sibling).
-    spec_inbox: where spec-review looks for ARTIFACT-WAL copies.
+    spec_inbox: where spec-review looks for product spec copies.
     """
     if _is_product_url(product_ref):
         return product_ref, product_ref, f"{product_ref} (clone, then re-run wholeloop link <local-path>)"
@@ -456,6 +457,9 @@ def set_product_link(app: Path, product_ref: str) -> tuple[Path, list[str]]:
         )
 
     _, display, spec_inbox = normalize_product_ref(app, product_ref)
+    prefix: str | None = None
+    if not _is_product_url(product_ref):
+        prefix = read_artifact_prefix(Path(product_ref).expanduser())
     text = dest.read_text(encoding="utf-8")
     changed: list[str] = []
 
@@ -477,7 +481,38 @@ def set_product_link(app: Path, product_ref: str) -> tuple[Path, list[str]]:
         )
         changed.append("conventions §2 — product repo path (inserted)")
 
-    # §5 — Default spec path row
+    # §5 — spec_id_pattern + default spec path
+    if prefix:
+        pattern = f"ARTIFACT-{prefix}-NNN"
+        new_text, n = re.subn(
+            r"(\| \*\*spec_id_pattern\*\* \| )`[^`]*`( \|)",
+            rf"\1`{pattern}`\2",
+            text,
+            count=1,
+        )
+        if n:
+            text = new_text
+            changed.append("conventions §5 — spec_id_pattern")
+        elif "**spec_id_pattern**" not in text:
+            row = f"| **spec_id_pattern** | `{pattern}` |"
+            new_text, n = re.subn(
+                r"(\| \*\*provider\*\* \|[^\n]+\n)",
+                r"\1" + row + "\n",
+                text,
+                count=1,
+            )
+            if n:
+                text = new_text
+                changed.append("conventions §5 — spec_id_pattern (inserted)")
+        new_text, n = re.subn(
+            r"(\| \*\*Label prefix\*\* \| e\.g\. `spec:` → )`[^`]*`( \|)",
+            rf"\1`spec:{pattern.replace('-NNN', '-042')}`\2",
+            text,
+            count=1,
+        )
+        if n:
+            text = new_text
+            changed.append("conventions §5 — label prefix example")
     new_text, n = re.subn(
         r"(\| \*\*Default spec path\*\* \| )`[^`]*`( \|)",
         rf"\1`{spec_inbox}{{spec_id}}.md`\2",

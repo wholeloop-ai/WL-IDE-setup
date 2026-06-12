@@ -7,7 +7,7 @@
 
 1. **project-conventions** — CLI bootstrap on `init`; run the **project-conventions** agent in IDE to confirm (see `docs/PROJECT_CONVENTIONS.md`).
 2. Enable **Linear** or **Jira MCP** in your IDE when not using `manual` mode (see `docs/TRACKERS.md`).
-3. Specs (ARTIFACT-WAL) arrive from the **product** repo via `inbox/` or path in conventions.
+3. Specs (product spec) arrive from the **product** repo via `inbox/` or path in conventions.
 
 ## Skills location (single source of truth)
 
@@ -39,13 +39,13 @@ Run folder: `workspace/runs/<run-key>/` — see `GUIDELINES.md` for layout.
 
 | IDE | How |
 |-----|-----|
-| **Cursor** | “run **spec-review** for ARTIFACT-WAL-042”; rules in `.cursor/rules/wholeloop.mdc` |
+| **Cursor** | “run **spec-review** for ARTIFACT-<PREFIX>-042”; rules in `.cursor/rules/wholeloop.mdc` |
 | **Claude Code** | `/spec-review`, `/planner`, … or natural language |
 | **VS Code** | Copilot Chat: “Follow `WHOLELOOP.md` and run **spec-review** from `.agents/skills/spec-review/SKILL.md`” |
 
 ## Typical session
 
-1. **spec-review** — ARTIFACT-WAL and/or epic → `context.json` → human `approve`.
+1. **spec-review** — product spec and/or epic → `context.json` → human `approve`.
 2. *(optional)* **ui-ux-designer Phase B** → `design-notes.md`.
 3. **planner** → `plan.md` per story → gate → set `execution_mode` (builder | manual).
 4. **builder** or manual execution → **reviewer** → **pr-agent** → gate → **handoff**.
@@ -62,7 +62,7 @@ Details: WholeLoop `docs/TRACKERS.md`.
 
 ## Product repo
 
-Scope → (optional mockup) → build-spec → ARTIFACT-WAL + epic. Copy spec to app `inbox/` before delivery.
+Scope → (optional mockup) → build-spec → product spec + epic. Copy spec to app `inbox/` before delivery.
 
 ## More documentation
 
